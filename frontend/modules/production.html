@@ -1,0 +1,2461 @@
+<!-- ============================================
+     MÓDULO: PRODUCCIÓN LECHERA
+     Sistema CattleSIS - Gestión Ganadera
+============================================ -->
+
+<style>
+    .production-container {
+        max-width: 1800px;
+        margin: 0 auto;
+        animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header del módulo */
+    .module-header {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 32px;
+        border-radius: 16px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow-primary);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-left h1 {
+        font-size: 32px;
+        font-weight: 900;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .header-left p {
+        opacity: 0.9;
+        font-size: 15px;
+    }
+
+    .header-stats {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
+        margin-top: 24px;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 36px;
+        font-weight: 900;
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        font-size: 13px;
+        opacity: 0.9;
+    }
+
+    .stat-trend {
+        font-size: 13px;
+        margin-top: 6px;
+        font-weight: 700;
+    }
+
+    .stat-trend.up {
+        color: #10B981;
+    }
+
+    .stat-trend.down {
+        color: #EF4444;
+    }
+
+    /* Tabs */
+    .tabs-container {
+        background: white;
+        border-radius: 16px;
+        padding: 20px 24px 0;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .tabs {
+        display: flex;
+        gap: 8px;
+        border-bottom: 2px solid #F3F4F6;
+        overflow-x: auto;
+    }
+
+    .tab {
+        padding: 12px 24px;
+        border: none;
+        background: none;
+        font-size: 14px;
+        font-weight: 600;
+        color: #6B7280;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .tab:hover {
+        color: var(--color-primary);
+    }
+
+    .tab.active {
+        color: var(--color-primary);
+        border-bottom-color: var(--color-primary);
+    }
+
+    /* Toolbar */
+    .toolbar {
+        background: white;
+        padding: 24px;
+        border-radius: 16px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .toolbar-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .search-box {
+        flex: 1;
+        max-width: 400px;
+        position: relative;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 12px 16px 12px 44px;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .search-box input:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 4px var(--color-primary-very-light);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        color: #9CA3AF;
+    }
+
+    .btn-primary {
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-primary);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-primary-hover);
+    }
+
+    .filters {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #6B7280;
+        margin-bottom: 6px;
+        display: block;
+        text-transform: uppercase;
+    }
+
+    .filter-select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 2px solid #E5E7EB;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #1F2937;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: white;
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--color-primary);
+    }
+
+    /* Grid de tarjetas */
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .production-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .production-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .production-card.alta {
+        border-color: var(--color-success);
+    }
+
+    .production-card.media {
+        border-color: var(--color-warning);
+    }
+
+    .production-card.baja {
+        border-color: #EF4444;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+    }
+
+    .card-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: #1F2937;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .card-badge {
+        font-size: 13px;
+        font-weight: 700;
+        padding: 6px 12px;
+        border-radius: 6px;
+    }
+
+    .card-badge.alta {
+        background: var(--color-success-light);
+        color: var(--color-success);
+    }
+
+    .card-badge.media {
+        background: var(--color-warning-light);
+        color: var(--color-warning);
+    }
+
+    .card-badge.baja {
+        background: rgba(239, 68, 68, 0.1);
+        color: #EF4444;
+    }
+
+    .card-body {
+        margin-bottom: 16px;
+    }
+
+    .production-value {
+        font-size: 36px;
+        font-weight: 900;
+        color: var(--color-primary);
+        margin-bottom: 4px;
+    }
+
+    .production-subtitle {
+        font-size: 14px;
+        color: #6B7280;
+    }
+
+    .card-info {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-top: 12px;
+    }
+
+    .card-info-item {
+        font-size: 13px;
+        color: #6B7280;
+    }
+
+    .card-info-item strong {
+        color: #1F2937;
+        font-weight: 700;
+    }
+
+    .card-footer {
+        display: flex;
+        gap: 8px;
+        padding-top: 16px;
+        border-top: 2px solid #F3F4F6;
+    }
+
+    /* Tabla */
+    .table-container {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        margin-bottom: 24px;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table thead {
+        background: #F9FAFB;
+    }
+
+    .data-table th {
+        padding: 16px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 700;
+        color: #6B7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #E5E7EB;
+    }
+
+    .data-table td {
+        padding: 16px;
+        border-bottom: 1px solid #F3F4F6;
+        font-size: 14px;
+        color: #1F2937;
+    }
+
+    .data-table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .data-table tbody tr:hover {
+        background: #F9FAFB;
+    }
+
+    /* Badges */
+    .badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .badge.mañana {
+        background: rgba(59, 130, 246, 0.1);
+        color: #2563EB;
+    }
+
+    .badge.tarde {
+        background: var(--color-warning-light);
+        color: var(--color-warning);
+    }
+
+    .badge.noche {
+        background: rgba(107, 114, 128, 0.1);
+        color: #6B7280;
+    }
+
+    .badge.excelente {
+        background: var(--color-success-light);
+        color: var(--color-success);
+    }
+
+    .badge.buena {
+        background: rgba(59, 130, 246, 0.1);
+        color: #2563EB;
+    }
+
+    .badge.regular {
+        background: var(--color-warning-light);
+        color: var(--color-warning);
+    }
+
+    .badge.entregada {
+        background: var(--color-success-light);
+        color: var(--color-success);
+    }
+
+    .badge.pendiente {
+        background: var(--color-warning-light);
+        color: var(--color-warning);
+    }
+
+    /* Botones de acción */
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-action {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-view {
+        background: rgba(59, 130, 246, 0.1);
+        color: #2563EB;
+    }
+
+    .btn-view:hover {
+        background: #2563EB;
+        color: white;
+    }
+
+    .btn-edit {
+        background: rgba(245, 158, 11, 0.1);
+        color: #D97706;
+    }
+
+    .btn-edit:hover {
+        background: #F59E0B;
+        color: white;
+    }
+
+    .btn-delete {
+        background: rgba(239, 68, 68, 0.1);
+        color: #DC2626;
+    }
+
+    .btn-delete:hover {
+        background: #EF4444;
+        color: white;
+    }
+
+    /* Modal */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        max-width: 900px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .modal-header {
+        padding: 24px;
+        border-bottom: 2px solid #F3F4F6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-size: 24px;
+        font-weight: 800;
+        color: #1F2937;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .btn-close {
+        width: 36px;
+        height: 36px;
+        border: none;
+        background: #F3F4F6;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 20px;
+        color: #6B7280;
+        transition: all 0.2s ease;
+    }
+
+    .btn-close:hover {
+        background: #E5E7EB;
+        color: #1F2937;
+    }
+
+    .modal-body {
+        padding: 24px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #374151;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .form-label .required {
+        color: #EF4444;
+    }
+
+    .form-input {
+        padding: 12px 16px;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #1F2937;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 4px var(--color-primary-very-light);
+    }
+
+    .form-select {
+        padding: 12px 16px;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #1F2937;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .form-select:focus {
+        outline: none;
+        border-color: var(--color-primary);
+    }
+
+    .modal-footer {
+        padding: 20px 24px;
+        border-top: 2px solid #F3F4F6;
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    .btn-secondary {
+        padding: 12px 24px;
+        border: 2px solid #E5E7EB;
+        background: white;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #6B7280;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+        border-color: #D1D5DB;
+        background: #F9FAFB;
+    }
+
+    .btn-save {
+        padding: 12px 32px;
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-primary);
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-primary-hover);
+    }
+
+    /* Detalles */
+    .detail-section {
+        margin-bottom: 24px;
+    }
+
+    .detail-section-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1F2937;
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #F3F4F6;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .detail-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #6B7280;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+    }
+
+    .detail-value {
+        font-size: 15px;
+        font-weight: 600;
+        color: #1F2937;
+    }
+
+    /* Alertas */
+    .alert-section {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        margin-bottom: 24px;
+    }
+
+    .alert-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid #F3F4F6;
+    }
+
+    .alert-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: #1F2937;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .alert-item {
+        display: flex;
+        gap: 14px;
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        border-left: 4px solid;
+        transition: all 0.2s ease;
+    }
+
+    .alert-item:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .alert-item.urgente {
+        background: #FEF2F2;
+        border-color: #EF4444;
+    }
+
+    .alert-item.advertencia {
+        background: #FFFBEB;
+        border-color: #F59E0B;
+    }
+
+    .alert-item.info {
+        background: #EFF6FF;
+        border-color: #3B82F6;
+    }
+
+    .alert-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .alert-content {
+        flex: 1;
+    }
+
+    .alert-content-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1F2937;
+        margin-bottom: 4px;
+    }
+
+    .alert-desc {
+        font-size: 13px;
+        color: #6B7280;
+        line-height: 1.5;
+    }
+
+    /* Gráficos y estadísticas */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .stat-box {
+        background: white;
+        padding: 24px;
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid;
+    }
+
+    .stat-box.primary {
+        border-color: var(--color-primary);
+    }
+
+    .stat-box.success {
+        border-color: var(--color-success);
+    }
+
+    .stat-box.warning {
+        border-color: var(--color-warning);
+    }
+
+    .stat-box.info {
+        border-color: #3B82F6;
+    }
+
+    .stat-box-label {
+        font-size: 14px;
+        color: #6B7280;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .stat-box-value {
+        font-size: 32px;
+        font-weight: 800;
+        color: #1F2937;
+    }
+
+    .stat-box-trend {
+        font-size: 13px;
+        color: #10B981;
+        margin-top: 8px;
+        font-weight: 600;
+    }
+
+    .chart-container {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        margin-bottom: 24px;
+    }
+
+    .chart-header {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #1F2937;
+    }
+
+    /* Quick actions */
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .quick-action-btn {
+        padding: 20px;
+        background: white;
+        border: 2px solid #E5E7EB;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+    .quick-action-btn:hover {
+        border-color: var(--color-primary);
+        background: var(--color-primary-very-light);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .quick-action-icon {
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
+
+    .quick-action-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1F2937;
+    }
+
+    /* Responsive */
+    @media (max-width: 1400px) {
+        .header-stats {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .header-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .cards-grid {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            gap: 16px;
+            text-align: center;
+        }
+
+        .toolbar-top {
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .search-box {
+            max-width: 100%;
+        }
+
+        .filters {
+            flex-direction: column;
+        }
+
+        .cards-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .header-stats {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="production-container">
+    <!-- Header del módulo -->
+    <div class="module-header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1>🥛 Producción Lechera</h1>
+                <p>Control completo del ordeño y producción diaria de leche</p>
+            </div>
+        </div>
+        
+        <div class="header-stats">
+            <div class="stat-card">
+                <div class="stat-value">485 L</div>
+                <div class="stat-label">Producción Hoy</div>
+                <div class="stat-trend up">↑ +5.2%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">16.5 L</div>
+                <div class="stat-label">Promedio/Vaca</div>
+                <div class="stat-trend up">↑ +2.1%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">28</div>
+                <div class="stat-label">Vacas Ordeñadas</div>
+                <div class="stat-trend">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3,280 L</div>
+                <div class="stat-label">Esta Semana</div>
+                <div class="stat-trend up">↑ +8.5%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">$1,455</div>
+                <div class="stat-label">Ingresos Semana</div>
+                <div class="stat-trend up">↑ +12%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alertas de Producción -->
+    <div class="alert-section">
+        <div class="alert-header">
+            <div class="alert-title">⚠️ Alertas de Producción</div>
+        </div>
+
+        <div class="alert-item advertencia">
+            <div class="alert-icon" style="background: #FEF3C7; color: #F59E0B;">📉</div>
+            <div class="alert-content">
+                <div class="alert-content-title">Baja Producción - Vaca #1234 "Margarita"</div>
+                <div class="alert-desc">Producción bajó de 18L a 12L - Revisar salud y alimentación</div>
+            </div>
+        </div>
+
+        <div class="alert-item info">
+            <div class="alert-icon" style="background: #DBEAFE; color: #3B82F6;">🚚</div>
+            <div class="alert-content">
+                <div class="alert-content-title">Entrega Pendiente - Lácteos Santa Cruz</div>
+                <div class="alert-desc">280 litros para entrega hoy a las 18:00</div>
+            </div>
+        </div>
+
+        <div class="alert-item urgente">
+            <div class="alert-icon" style="background: #FEE2E2; color: #EF4444;">⏰</div>
+            <div class="alert-content">
+                <div class="alert-content-title">Ordeño Vespertino Pendiente</div>
+                <div class="alert-desc">Programado para las 17:00 - 28 vacas por ordeñar</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <button class="quick-action-btn" onclick="openOrdenoModal()">
+            <div class="quick-action-icon">🥛</div>
+            <div class="quick-action-label">Registrar Ordeño</div>
+        </button>
+        <button class="quick-action-btn" onclick="openEntregaModal()">
+            <div class="quick-action-icon">🚚</div>
+            <div class="quick-action-label">Nueva Entrega</div>
+        </button>
+        <button class="quick-action-btn" onclick="showTab('calidad')">
+            <div class="quick-action-icon">🧪</div>
+            <div class="quick-action-label">Control Calidad</div>
+        </button>
+        <button class="quick-action-btn" onclick="showTab('estadisticas')">
+            <div class="quick-action-icon">📊</div>
+            <div class="quick-action-label">Ver Estadísticas</div>
+        </button>
+    </div>
+
+    <!-- Tabs de navegación -->
+    <div class="tabs-container">
+        <div class="tabs">
+            <button class="tab active" data-tab="ordeno">🥛 Ordeño Diario</button>
+            <button class="tab" data-tab="produccion">📈 Análisis Producción</button>
+            <button class="tab" data-tab="entregas">🚚 Entregas</button>
+            <button class="tab" data-tab="calidad">🧪 Control Calidad</button>
+            <button class="tab" data-tab="estadisticas">📊 Estadísticas</button>
+        </div>
+    </div>
+
+    <!-- TAB: ORDEÑO DIARIO -->
+    <div id="ordenoContent">
+        <div class="toolbar">
+            <div class="toolbar-top">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchOrdeno" placeholder="Buscar por vaca...">
+                </div>
+                <button class="btn-primary" id="btnAddOrdeno">
+                    <span>➕</span> Registrar Ordeño
+                </button>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Fecha</label>
+                    <input type="date" class="filter-select" id="filterFechaOrdeno" value="2025-10-17">
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Turno</label>
+                    <select class="filter-select" id="filterTurno">
+                        <option value="">Todos</option>
+                        <option value="Mañana">Mañana</option>
+                        <option value="Tarde">Tarde</option>
+                        <option value="Noche">Noche</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Potrero</label>
+                    <select class="filter-select" id="filterPotreroOrdeno">
+                        <option value="">Todos</option>
+                        <option value="Potrero A">Potrero A</option>
+                        <option value="Potrero B">Potrero B</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Vaca</th>
+                            <th>Arete</th>
+                            <th>Turno</th>
+                            <th>Litros</th>
+                            <th>Hora</th>
+                            <th>Ordeñador</th>
+                            <th>Observaciones</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordenoTableBody">
+                        <!-- Los ordeños se cargan con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: ANÁLISIS DE PRODUCCIÓN -->
+    <div id="produccionContent" style="display: none;">
+        <div class="toolbar">
+            <div class="toolbar-top">
+                <h3 style="font-size: 18px; font-weight: 700; color: #1F2937;">Análisis de Producción por Vaca</h3>
+                <div class="filters" style="max-width: 300px;">
+                    <div class="filter-group">
+                        <label class="filter-label">Período</label>
+                        <select class="filter-select" id="filterPeriodo">
+                            <option value="hoy">Hoy</option>
+                            <option value="semana" selected>Esta Semana</option>
+                            <option value="mes">Este Mes</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cards-grid" id="produccionGrid">
+            <!-- Las tarjetas se cargan con JavaScript -->
+        </div>
+    </div>
+
+    <!-- TAB: ENTREGAS -->
+    <div id="entregasContent" style="display: none;">
+        <div class="toolbar">
+            <div class="toolbar-top">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchEntregas" placeholder="Buscar entrega...">
+                </div>
+                <button class="btn-primary" id="btnAddEntrega">
+                    <span>➕</span> Nueva Entrega
+                </button>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Fecha</label>
+                    <input type="date" class="filter-select" id="filterFechaEntrega">
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Estado</label>
+                    <select class="filter-select" id="filterEstadoEntrega">
+                        <option value="">Todos</option>
+                        <option value="Entregada">Entregada</option>
+                        <option value="Pendiente">Pendiente</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Cantidad (L)</th>
+                            <th>Precio/L</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="entregasTableBody">
+                        <!-- Las entregas se cargan con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: CONTROL DE CALIDAD -->
+    <div id="calidadContent" style="display: none;">
+        <div class="toolbar">
+            <div class="toolbar-top">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchCalidad" placeholder="Buscar análisis...">
+                </div>
+                <button class="btn-primary" id="btnAddCalidad">
+                    <span>➕</span> Nuevo Análisis
+                </button>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Fecha</label>
+                    <input type="date" class="filter-select" id="filterFechaCalidad">
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Calidad</label>
+                    <select class="filter-select" id="filterCalidad">
+                        <option value="">Todas</option>
+                        <option value="Excelente">Excelente</option>
+                        <option value="Buena">Buena</option>
+                        <option value="Regular">Regular</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Turno</th>
+                            <th>Grasa (%)</th>
+                            <th>Proteína (%)</th>
+                            <th>UFC (x1000)</th>
+                            <th>Temperatura (°C)</th>
+                            <th>Calidad</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="calidadTableBody">
+                        <!-- Los análisis se cargan con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: ESTADÍSTICAS -->
+    <div id="estadisticasContent" style="display: none;">
+        <div class="toolbar">
+            <div class="toolbar-top">
+                <h3 style="font-size: 18px; font-weight: 700; color: #1F2937;">Estadísticas de Producción</h3>
+                <div class="filters" style="max-width: 300px;">
+                    <div class="filter-group">
+                        <label class="filter-label">Período</label>
+                        <select class="filter-select" id="filterPeriodoStats">
+                            <option value="semana">Esta Semana</option>
+                            <option value="mes">Este Mes</option>
+                            <option value="año">Este Año</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-box primary">
+                <div class="stat-box-label">Total Producido</div>
+                <div class="stat-box-value">3,280 L</div>
+                <div class="stat-box-trend">↑ +8.5% vs semana anterior</div>
+            </div>
+
+            <div class="stat-box success">
+                <div class="stat-box-label">Promedio Diario</div>
+                <div class="stat-box-value">468 L</div>
+                <div class="stat-box-trend">↑ +12 litros/día</div>
+            </div>
+
+            <div class="stat-box warning">
+                <div class="stat-box-label">Mejor Día</div>
+                <div class="stat-box-value">495 L</div>
+                <div class="stat-box-trend">Miércoles 16/10</div>
+            </div>
+
+            <div class="stat-box info">
+                <div class="stat-box-label">Ingresos Totales</div>
+                <div class="stat-box-value">$1,640</div>
+                <div class="stat-box-trend">↑ +15.2%</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-header">📈 Producción de los Últimos 7 Días</div>
+            <div style="height: 300px; display: flex; align-items: flex-end; gap: 20px; padding: 20px;">
+                <div style="flex: 1; background: linear-gradient(to top, var(--color-primary), var(--color-primary-light)); height: 75%; border-radius: 8px; position: relative;">
+                    <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 14px;">425L</div>
+                    <div style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #6B7280;">Lun</div>
+                </div>
+                <div style="flex: 1; background: linear-gradient(to top, var(--color-primary), var(--color-primary-light)); height: 82%; border-radius: 8px; position: relative;">
+                    <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 14px;">450L</div>
+                    <div style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #6B7280;">Mar</div>
+                </div>
+                <div style="flex: 1; background: linear-gradient(to top, var(--color-success), var(--color-success-light)); height: 98%; border-radius: 8px; position: relative;">
+                    <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 14px;">495L</div>
+                    <div style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #6B7280;">Mié</div>
+                </div>
+                <div style="flex: 1; background: linear-gradient(to top, var(--color-primary), var(--color-primary-light)); height: 85%; border-radius: 8px; position: relative;">
+                    <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 14px;">468L</div>
+                    <div style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #6B7280;">Jue</div>
+                </div>
+                <div style="flex: 1; background: linear-gradient(to top, var(--color-primary), var(--color-primary-light)); height: 88%; border-radius: 8px; position: relative;">
+                    <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 14px;">475L</div>
+                    <div style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #6B7280;">Vie</div>
+                </div>
+                <div style="flex: 1; background: linear-gradient(to top, var(--color-primary), var(--color-primary-light)); height: 78%; border-radius: 8px; position: relative;">
+                    <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 14px;">442L</div>
+                    <div style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #6B7280;">Sáb</div>
+                </div>
+                <div style="flex: 1; background: linear-gradient(to top, var(--color-primary), var(--color-primary-light)); height: 92%; border-radius: 8px; position: relative;">
+                    <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-weight: 700; font-size: 14px;">485L</div>
+                    <div style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: 700; color: var(--color-primary);">Hoy</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-header">🏆 Top 5 Vacas Productoras de la Semana</div>
+            <div style="padding: 10px 0;">
+                <div style="display: flex; align-items: center; padding: 16px; border-bottom: 1px solid #F3F4F6;">
+                    <div style="width: 40px; height: 40px; background: #FCD34D; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; margin-right: 16px;">1</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; font-size: 15px;">Margarita (#1234)</div>
+                        <div style="font-size: 13px; color: #6B7280;">Holstein - Potrero A</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 24px; font-weight: 900; color: var(--color-primary);">126 L</div>
+                        <div style="font-size: 12px; color: #6B7280;">18 L/día</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; padding: 16px; border-bottom: 1px solid #F3F4F6;">
+                    <div style="width: 40px; height: 40px; background: #D1D5DB; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; margin-right: 16px;">2</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; font-size: 15px;">Luna (#1245)</div>
+                        <div style="font-size: 13px; color: #6B7280;">Jersey - Potrero B</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 24px; font-weight: 900; color: var(--color-primary);">119 L</div>
+                        <div style="font-size: 12px; color: #6B7280;">17 L/día</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; padding: 16px; border-bottom: 1px solid #F3F4F6;">
+                    <div style="width: 40px; height: 40px; background: #CD7F32; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; margin-right: 16px; color: white;">3</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; font-size: 15px;">Estrella (#1256)</div>
+                        <div style="font-size: 13px; color: #6B7280;">Holstein - Potrero A</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 24px; font-weight: 900; color: var(--color-primary);">112 L</div>
+                        <div style="font-size: 12px; color: #6B7280;">16 L/día</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; padding: 16px; border-bottom: 1px solid #F3F4F6;">
+                    <div style="width: 40px; height: 40px; background: #E5E7EB; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; margin-right: 16px;">4</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; font-size: 15px;">Daisy (#1267)</div>
+                        <div style="font-size: 13px; color: #6B7280;">Jersey - Potrero B</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 24px; font-weight: 900; color: var(--color-primary);">108 L</div>
+                        <div style="font-size: 12px; color: #6B7280;">15.4 L/día</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; padding: 16px;">
+                    <div style="width: 40px; height: 40px; background: #E5E7EB; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; margin-right: 16px;">5</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; font-size: 15px;">Rosa (#1278)</div>
+                        <div style="font-size: 13px; color: #6B7280;">Holstein - Potrero A</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 24px; font-weight: 900; color: var(--color-primary);">105 L</div>
+                        <div style="font-size: 12px; color: #6B7280;">15 L/día</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Registrar Ordeño -->
+<div class="modal-overlay" id="modalOrdeno">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalOrdenoTitle">
+                <span>🥛</span> Registrar Ordeño
+            </h2>
+            <button class="btn-close" onclick="closeOrdenoModal()">✖</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="ordenoForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Fecha <span class="required">*</span>
+                        </label>
+                        <input type="date" class="form-input" id="ordenoFecha" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Hora <span class="required">*</span>
+                        </label>
+                        <input type="time" class="form-input" id="ordenoHora" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Vaca <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="ordenoVaca" required>
+                            <option value="">Seleccionar vaca</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Turno <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="ordenoTurno" required>
+                            <option value="">Seleccionar turno</option>
+                            <option value="Mañana">Mañana (5:00 - 10:00)</option>
+                            <option value="Tarde">Tarde (14:00 - 17:00)</option>
+                            <option value="Noche">Noche (18:00 - 21:00)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Cantidad (Litros) <span class="required">*</span>
+                        </label>
+                        <input type="number" class="form-input" id="ordenoCantidad" placeholder="Ej: 18.5" step="0.1" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Ordeñador <span class="required">*</span>
+                        </label>
+                        <input type="text" class="form-input" id="ordenoOrdenador" placeholder="Nombre del ordeñador" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">Observaciones</label>
+                        <textarea class="form-input" id="ordenoObservaciones" rows="3" placeholder="Notas sobre el ordeño, comportamiento de la vaca..."></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeOrdenoModal()">Cancelar</button>
+            <button class="btn-save" onclick="saveOrdeno()">💾 Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Nueva Entrega -->
+<div class="modal-overlay" id="modalEntrega">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalEntregaTitle">
+                <span>🚚</span> Nueva Entrega
+            </h2>
+            <button class="btn-close" onclick="closeEntregaModal()">✖</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="entregaForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Fecha <span class="required">*</span>
+                        </label>
+                        <input type="date" class="form-input" id="entregaFecha" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Hora
+                        </label>
+                        <input type="time" class="form-input" id="entregaHora">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Cliente <span class="required">*</span>
+                        </label>
+                        <input type="text" class="form-input" id="entregaCliente" placeholder="Nombre del cliente" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Cantidad (Litros) <span class="required">*</span>
+                        </label>
+                        <input type="number" class="form-input" id="entregaCantidad" placeholder="Ej: 280" step="0.1" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Precio por Litro ($) <span class="required">*</span>
+                        </label>
+                        <input type="number" class="form-input" id="entregaPrecio" placeholder="Ej: 0.50" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Total ($)
+                        </label>
+                        <input type="text" class="form-input" id="entregaTotal" readonly style="background: #F3F4F6;">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Estado <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="entregaEstado" required>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Entregada">Entregada</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Responsable</label>
+                        <input type="text" class="form-input" id="entregaResponsable" placeholder="Nombre del responsable">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">Observaciones</label>
+                        <textarea class="form-input" id="entregaObservaciones" rows="3" placeholder="Notas sobre la entrega..."></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeEntregaModal()">Cancelar</button>
+            <button class="btn-save" onclick="saveEntrega()">💾 Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Control de Calidad -->
+<div class="modal-overlay" id="modalCalidad">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalCalidadTitle">
+                <span>🧪</span> Nuevo Análisis de Calidad
+            </h2>
+            <button class="btn-close" onclick="closeCalidadModal()">✖</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="calidadForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Fecha <span class="required">*</span>
+                        </label>
+                        <input type="date" class="form-input" id="calidadFecha" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Turno <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="calidadTurno" required>
+                            <option value="">Seleccionar turno</option>
+                            <option value="Mañana">Mañana</option>
+                            <option value="Tarde">Tarde</option>
+                            <option value="Noche">Noche</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Grasa (%) <span class="required">*</span>
+                        </label>
+                        <input type="number" class="form-input" id="calidadGrasa" placeholder="Ej: 3.8" step="0.1" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Proteína (%) <span class="required">*</span>
+                        </label>
+                        <input type="number" class="form-input" id="calidadProteina" placeholder="Ej: 3.2" step="0.1" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            UFC (x1000)
+                        </label>
+                        <input type="number" class="form-input" id="calidadUFC" placeholder="Ej: 150" step="1" min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Temperatura (°C)
+                        </label>
+                        <input type="number" class="form-input" id="calidadTemperatura" placeholder="Ej: 4.5" step="0.1">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Calificación <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="calidadCalificacion" required>
+                            <option value="">Seleccionar</option>
+                            <option value="Excelente">Excelente</option>
+                            <option value="Buena">Buena</option>
+                            <option value="Regular">Regular</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Responsable</label>
+                        <input type="text" class="form-input" id="calidadResponsable" placeholder="Nombre del responsable">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">Observaciones</label>
+                        <textarea class="form-input" id="calidadObservaciones" rows="3" placeholder="Notas sobre el análisis..."></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeCalidadModal()">Cancelar</button>
+            <button class="btn-save" onclick="saveCalidad()">💾 Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Ver Detalles -->
+<div class="modal-overlay" id="modalDetails">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                <span>📋</span> Detalles
+            </h2>
+            <button class="btn-close" onclick="closeDetailsModal()">✖</button>
+        </div>
+
+        <div class="modal-body" id="detailsContent">
+            <!-- Los detalles se cargan con JavaScript -->
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeDetailsModal()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================
+// DATOS DE EJEMPLO
+// ============================================
+
+let ordenoData = [
+    { id: 'O001', fecha: '2025-10-17', hora: '06:30', vaca: 'Margarita', arete: '1234', turno: 'Mañana', litros: 18.5, ordenador: 'Juan Pérez', observaciones: 'Ordeño normal, vaca tranquila' },
+    { id: 'O002', fecha: '2025-10-17', hora: '06:35', vaca: 'Luna', arete: '1245', turno: 'Mañana', litros: 17.2, ordenador: 'Juan Pérez', observaciones: '' },
+    { id: 'O003', fecha: '2025-10-17', hora: '06:40', vaca: 'Estrella', arete: '1256', turno: 'Mañana', litros: 16.8, ordenador: 'Juan Pérez', observaciones: '' },
+    { id: 'O004', fecha: '2025-10-17', hora: '06:45', vaca: 'Daisy', arete: '1267', turno: 'Mañana', litros: 15.5, ordenador: 'María González', observaciones: '' },
+    { id: 'O005', fecha: '2025-10-17', hora: '06:50', vaca: 'Rosa', arete: '1278', turno: 'Mañana', litros: 15.0, ordenador: 'María González', observaciones: '' },
+    { id: 'O006', fecha: '2025-10-17', hora: '17:30', vaca: 'Margarita', arete: '1234', turno: 'Tarde', litros: 16.8, ordenador: 'Pedro Sánchez', observaciones: 'Producción ligeramente menor que en la mañana' },
+];
+
+let produccionData = [
+    { id: 'P001', vaca: 'Margarita', arete: '1234', raza: 'Holstein', potrero: 'Potrero A', totalSemana: 126, promedioDia: 18, nivel: 'alta' },
+    { id: 'P002', vaca: 'Luna', arete: '1245', raza: 'Jersey', potrero: 'Potrero B', totalSemana: 119, promedioDia: 17, nivel: 'alta' },
+    { id: 'P003', vaca: 'Estrella', arete: '1256', raza: 'Holstein', potrero: 'Potrero A', totalSemana: 112, promedioDia: 16, nivel: 'media' },
+    { id: 'P004', vaca: 'Daisy', arete: '1267', raza: 'Jersey', potrero: 'Potrero B', totalSemana: 108, promedioDia: 15.4, nivel: 'media' },
+    { id: 'P005', vaca: 'Rosa', arete: '1278', raza: 'Holstein', potrero: 'Potrero A', totalSemana: 105, promedioDia: 15, nivel: 'media' },
+    { id: 'P006', vaca: 'Bella', arete: '1289', raza: 'Jersey', potrero: 'Potrero B', totalSemana: 98, promedioDia: 14, nivel: 'media' },
+];
+
+let entregasData = [
+    { id: 'E001', fecha: '2025-10-17', hora: '08:00', cliente: 'Lácteos Santa Cruz', cantidad: 280, precioLitro: 0.50, total: 140, estado: 'Entregada', responsable: 'Carlos López', observaciones: '' },
+    { id: 'E002', fecha: '2025-10-16', hora: '18:30', cliente: 'Procesadora del Valle', cantidad: 320, precioLitro: 0.48, total: 153.60, estado: 'Entregada', responsable: 'Ana Martínez', observaciones: '' },
+    { id: 'E003', fecha: '2025-10-15', hora: '07:45', cliente: 'Lácteos Santa Cruz', cantidad: 265, precioLitro: 0.50, total: 132.50, estado: 'Entregada', responsable: 'Carlos López', observaciones: '' },
+    { id: 'E004', fecha: '2025-10-17', hora: '18:00', cliente: 'Lácteos Santa Cruz', cantidad: 280, precioLitro: 0.50, total: 140, estado: 'Pendiente', responsable: 'Carlos López', observaciones: 'Entrega programada para las 18:00' },
+];
+
+let calidadData = [
+    { id: 'C001', fecha: '2025-10-17', turno: 'Mañana', grasa: 3.8, proteina: 3.2, ufc: 145, temperatura: 4.2, calidad: 'Excelente', responsable: 'Dr. Ramírez', observaciones: 'Todos los parámetros dentro de rango óptimo' },
+    { id: 'C002', fecha: '2025-10-16', turno: 'Tarde', grasa: 3.6, proteina: 3.1, ufc: 168, temperatura: 4.8, calidad: 'Buena', responsable: 'Dr. Ramírez', observaciones: 'UFC ligeramente elevado' },
+    { id: 'C003', fecha: '2025-10-15', turno: 'Mañana', grasa: 3.9, proteina: 3.3, ufc: 132, temperatura: 4.0, calidad: 'Excelente', responsable: 'Dr. Ramírez', observaciones: '' },
+    { id: 'C004', fecha: '2025-10-14', turno: 'Tarde', grasa: 3.5, proteina: 3.0, ufc: 185, temperatura: 5.2, calidad: 'Buena', responsable: 'Dr. Ramírez', observaciones: 'Revisar temperatura de almacenamiento' },
+];
+
+// Vacas disponibles para ordeño
+const vacasDisponibles = [
+    { arete: '1234', nombre: 'Margarita' },
+    { arete: '1245', nombre: 'Luna' },
+    { arete: '1256', nombre: 'Estrella' },
+    { arete: '1267', nombre: 'Daisy' },
+    { arete: '1278', nombre: 'Rosa' },
+    { arete: '1289', nombre: 'Bella' },
+    { arete: '1290', nombre: 'Princesa' },
+    { arete: '1301', nombre: 'Carolina' },
+];
+
+let currentItemId = null;
+
+// ============================================
+// TABS
+// ============================================
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        showTab(this.dataset.tab);
+    });
+});
+
+function showTab(tabName) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+    
+    // Ocultar todos
+    document.getElementById('ordenoContent').style.display = 'none';
+    document.getElementById('produccionContent').style.display = 'none';
+    document.getElementById('entregasContent').style.display = 'none';
+    document.getElementById('calidadContent').style.display = 'none';
+    document.getElementById('estadisticasContent').style.display = 'none';
+    
+    // Mostrar el activo
+    if (tabName === 'ordeno') {
+        document.getElementById('ordenoContent').style.display = 'block';
+        renderOrdeno();
+    } else if (tabName === 'produccion') {
+        document.getElementById('produccionContent').style.display = 'block';
+        renderProduccion();
+    } else if (tabName === 'entregas') {
+        document.getElementById('entregasContent').style.display = 'block';
+        renderEntregas();
+    } else if (tabName === 'calidad') {
+        document.getElementById('calidadContent').style.display = 'block';
+        renderCalidad();
+    } else if (tabName === 'estadisticas') {
+        document.getElementById('estadisticasContent').style.display = 'block';
+    }
+}
+
+// ============================================
+// RENDERIZAR ORDEÑO
+// ============================================
+function renderOrdeno() {
+    const tbody = document.getElementById('ordenoTableBody');
+    
+    if (ordenoData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#6B7280; padding:40px;">No hay ordeños registrados</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = ordenoData.map(ord => `
+        <tr>
+            <td><strong>${ord.vaca}</strong></td>
+            <td><span class="badge" style="background: var(--color-primary-light); color: var(--color-primary);">#${ord.arete}</span></td>
+            <td><span class="badge ${ord.turno.toLowerCase()}">${ord.turno}</span></td>
+            <td><strong style="color: var(--color-primary); font-size: 16px;">${ord.litros} L</strong></td>
+            <td>${ord.hora}</td>
+            <td>${ord.ordenador}</td>
+            <td>${ord.observaciones || 'N/A'}</td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-action btn-view" onclick="viewDetails('ordeno', '${ord.id}')" title="Ver">👁️</button>
+                    <button class="btn-action btn-edit" onclick="editOrdeno('${ord.id}')" title="Editar">✏️</button>
+                    <button class="btn-action btn-delete" onclick="deleteOrdeno('${ord.id}')" title="Eliminar">🗑️</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// ============================================
+// RENDERIZAR PRODUCCIÓN
+// ============================================
+function renderProduccion() {
+    const grid = document.getElementById('produccionGrid');
+    
+    if (produccionData.length === 0) {
+        grid.innerHTML = '<p style="text-align:center; color:#6B7280; padding:40px; grid-column: 1/-1;">No hay datos de producción</p>';
+        return;
+    }
+    
+    grid.innerHTML = produccionData.map(prod => `
+        <div class="production-card ${prod.nivel}" onclick="viewDetails('produccion', '${prod.id}')">
+            <div class="card-header">
+                <div class="card-title">
+                    🐄 ${prod.vaca}
+                </div>
+                <div class="card-badge ${prod.nivel}">
+                    ${prod.nivel === 'alta' ? 'Alta' : prod.nivel === 'media' ? 'Media' : 'Baja'}
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="production-value">${prod.totalSemana} L</div>
+                <div class="production-subtitle">Producción Total Semanal</div>
+                
+                <div class="card-info">
+                    <div class="card-info-item">
+                        <strong>Promedio:</strong> ${prod.promedioDia} L/día
+                    </div>
+                    <div class="card-info-item">
+                        <strong>Arete:</strong> #${prod.arete}
+                    </div>
+                    <div class="card-info-item">
+                        <strong>Raza:</strong> ${prod.raza}
+                    </div>
+                    <div class="card-info-item">
+                        <strong>Potrero:</strong> ${prod.potrero}
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer" onclick="event.stopPropagation()">
+                <button class="btn-action btn-edit" onclick="showTab('ordeno')" title="Ver ordeños">📋</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ============================================
+// RENDERIZAR ENTREGAS
+// ============================================
+function renderEntregas() {
+    const tbody = document.getElementById('entregasTableBody');
+    
+    if (entregasData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#6B7280; padding:40px;">No hay entregas registradas</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = entregasData.map(ent => `
+        <tr>
+            <td>${new Date(ent.fecha).toLocaleDateString('es-ES')}</td>
+            <td><strong>${ent.cliente}</strong></td>
+            <td>${ent.cantidad} L</td>
+            <td>$${ent.precioLitro}</td>
+            <td><strong style="color: var(--color-success);">$${ent.total}</strong></td>
+            <td><span class="badge ${ent.estado.toLowerCase()}">${ent.estado}</span></td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-action btn-view" onclick="viewDetails('entrega', '${ent.id}')" title="Ver">👁️</button>
+                    <button class="btn-action btn-edit" onclick="editEntrega('${ent.id}')" title="Editar">✏️</button>
+                    <button class="btn-action btn-delete" onclick="deleteEntrega('${ent.id}')" title="Eliminar">🗑️</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// ============================================
+// RENDERIZAR CALIDAD
+// ============================================
+function renderCalidad() {
+    const tbody = document.getElementById('calidadTableBody');
+    
+    if (calidadData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#6B7280; padding:40px;">No hay análisis de calidad registrados</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = calidadData.map(cal => `
+        <tr>
+            <td>${new Date(cal.fecha).toLocaleDateString('es-ES')}</td>
+            <td><span class="badge ${cal.turno.toLowerCase()}">${cal.turno}</span></td>
+            <td>${cal.grasa}%</td>
+            <td>${cal.proteina}%</td>
+            <td>${cal.ufc}</td>
+            <td>${cal.temperatura}°C</td>
+            <td><span class="badge ${cal.calidad.toLowerCase()}">${cal.calidad}</span></td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-action btn-view" onclick="viewDetails('calidad', '${cal.id}')" title="Ver">👁️</button>
+                    <button class="btn-action btn-edit" onclick="editCalidad('${cal.id}')" title="Editar">✏️</button>
+                    <button class="btn-action btn-delete" onclick="deleteCalidad('${cal.id}')" title="Eliminar">🗑️</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// ============================================
+// MODALES
+// ============================================
+function openOrdenoModal() {
+    document.getElementById('modalOrdeno').classList.add('active');
+    document.body.style.overflow = 'hidden';
+    initializeVacasSelect();
+}
+
+function closeOrdenoModal() {
+    document.getElementById('modalOrdeno').classList.remove('active');
+    document.body.style.overflow = 'auto';
+    document.getElementById('ordenoForm').reset();
+    currentItemId = null;
+}
+
+function openEntregaModal() {
+    document.getElementById('modalEntrega').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeEntregaModal() {
+    document.getElementById('modalEntrega').classList.remove('active');
+    document.body.style.overflow = 'auto';
+    document.getElementById('entregaForm').reset();
+    currentItemId = null;
+}
+
+function openCalidadModal() {
+    document.getElementById('modalCalidad').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCalidadModal() {
+    document.getElementById('modalCalidad').classList.remove('active');
+    document.body.style.overflow = 'auto';
+    document.getElementById('calidadForm').reset();
+    currentItemId = null;
+}
+
+function closeDetailsModal() {
+    document.getElementById('modalDetails').classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+// ============================================
+// INICIALIZAR SELECT DE VACAS
+// ============================================
+function initializeVacasSelect() {
+    const select = document.getElementById('ordenoVaca');
+    if (!select) return;
+    
+    select.innerHTML = '<option value="">Seleccionar vaca</option>';
+    vacasDisponibles.forEach(vaca => {
+        const option = document.createElement('option');
+        option.value = vaca.nombre;
+        option.dataset.arete = vaca.arete;
+        option.textContent = `${vaca.nombre} (#${vaca.arete})`;
+        select.appendChild(option);
+    });
+}
+
+// ============================================
+// GUARDAR
+// ============================================
+function saveOrdeno() {
+    const fecha = document.getElementById('ordenoFecha').value;
+    const hora = document.getElementById('ordenoHora').value;
+    const vacaSelect = document.getElementById('ordenoVaca');
+    const vaca = vacaSelect.value;
+    const arete = vacaSelect.selectedOptions[0]?.dataset.arete || '';
+    const turno = document.getElementById('ordenoTurno').value;
+    const litros = document.getElementById('ordenoCantidad').value;
+    const ordenador = document.getElementById('ordenoOrdenador').value;
+    const observaciones = document.getElementById('ordenoObservaciones').value;
+
+    if (!fecha || !hora || !vaca || !turno || !litros || !ordenador) {
+        alert('⚠️ Por favor completa los campos requeridos');
+        return;
+    }
+
+    const ordenoItem = {
+        fecha,
+        hora,
+        vaca,
+        arete,
+        turno,
+        litros: parseFloat(litros),
+        ordenador,
+        observaciones
+    };
+
+    if (currentItemId) {
+        const index = ordenoData.findIndex(o => o.id === currentItemId);
+        ordenoData[index] = { ...ordenoData[index], ...ordenoItem };
+        alert('✅ Ordeño actualizado correctamente');
+    } else {
+        const newId = 'O' + String(ordenoData.length + 1).padStart(3, '0');
+        ordenoData.push({ id: newId, ...ordenoItem });
+        alert('✅ Ordeño registrado correctamente');
+    }
+
+    closeOrdenoModal();
+    renderOrdeno();
+}
+
+function saveEntrega() {
+    const fecha = document.getElementById('entregaFecha').value;
+    const hora = document.getElementById('entregaHora').value;
+    const cliente = document.getElementById('entregaCliente').value;
+    const cantidad = document.getElementById('entregaCantidad').value;
+    const precioLitro = document.getElementById('entregaPrecio').value;
+    const estado = document.getElementById('entregaEstado').value;
+    const responsable = document.getElementById('entregaResponsable').value;
+    const observaciones = document.getElementById('entregaObservaciones').value;
+
+    if (!fecha || !cliente || !cantidad || !precioLitro || !estado) {
+        alert('⚠️ Por favor completa los campos requeridos');
+        return;
+    }
+
+    const total = (parseFloat(cantidad) * parseFloat(precioLitro)).toFixed(2);
+
+    const entregaItem = {
+        fecha,
+        hora: hora || 'N/A',
+        cliente,
+        cantidad: parseFloat(cantidad),
+        precioLitro: parseFloat(precioLitro),
+        total: parseFloat(total),
+        estado,
+        responsable: responsable || 'N/A',
+        observaciones
+    };
+
+    if (currentItemId) {
+        const index = entregasData.findIndex(e => e.id === currentItemId);
+        entregasData[index] = { ...entregasData[index], ...entregaItem };
+        alert('✅ Entrega actualizada correctamente');
+    } else {
+        const newId = 'E' + String(entregasData.length + 1).padStart(3, '0');
+        entregasData.push({ id: newId, ...entregaItem });
+        alert('✅ Entrega registrada correctamente');
+    }
+
+    closeEntregaModal();
+    renderEntregas();
+}
+
+function saveCalidad() {
+    const fecha = document.getElementById('calidadFecha').value;
+    const turno = document.getElementById('calidadTurno').value;
+    const grasa = document.getElementById('calidadGrasa').value;
+    const proteina = document.getElementById('calidadProteina').value;
+    const ufc = document.getElementById('calidadUFC').value;
+    const temperatura = document.getElementById('calidadTemperatura').value;
+    const calidad = document.getElementById('calidadCalificacion').value;
+    const responsable = document.getElementById('calidadResponsable').value;
+    const observaciones = document.getElementById('calidadObservaciones').value;
+
+    if (!fecha || !turno || !grasa || !proteina || !calidad) {
+        alert('⚠️ Por favor completa los campos requeridos');
+        return;
+    }
+
+    const calidadItem = {
+        fecha,
+        turno,
+        grasa: parseFloat(grasa),
+        proteina: parseFloat(proteina),
+        ufc: ufc ? parseInt(ufc) : 0,
+        temperatura: temperatura ? parseFloat(temperatura) : 0,
+        calidad,
+        responsable: responsable || 'N/A',
+        observaciones
+    };
+
+    if (currentItemId) {
+        const index = calidadData.findIndex(c => c.id === currentItemId);
+        calidadData[index] = { ...calidadData[index], ...calidadItem };
+        alert('✅ Análisis actualizado correctamente');
+    } else {
+        const newId = 'C' + String(calidadData.length + 1).padStart(3, '0');
+        calidadData.push({ id: newId, ...calidadItem });
+        alert('✅ Análisis registrado correctamente');
+    }
+
+    closeCalidadModal();
+    renderCalidad();
+}
+
+// ============================================
+// EDITAR Y ELIMINAR
+// ============================================
+function editOrdeno(id) {
+    const ord = ordenoData.find(o => o.id === id);
+    if (!ord) return;
+
+    document.getElementById('modalOrdenoTitle').innerHTML = '<span>✏️</span> Editar Ordeño';
+    document.getElementById('ordenoFecha').value = ord.fecha;
+    document.getElementById('ordenoHora').value = ord.hora;
+    document.getElementById('ordenoVaca').value = ord.vaca;
+    document.getElementById('ordenoTurno').value = ord.turno;
+    document.getElementById('ordenoCantidad').value = ord.litros;
+    document.getElementById('ordenoOrdenador').value = ord.ordenador;
+    document.getElementById('ordenoObservaciones').value = ord.observaciones || '';
+
+    currentItemId = id;
+    openOrdenoModal();
+}
+
+function deleteOrdeno(id) {
+    if (confirm('¿Estás seguro de eliminar este registro de ordeño?')) {
+        ordenoData = ordenoData.filter(o => o.id !== id);
+        renderOrdeno();
+        alert('✅ Ordeño eliminado correctamente');
+    }
+}
+
+function editEntrega(id) {
+    const ent = entregasData.find(e => e.id === id);
+    if (!ent) return;
+
+    document.getElementById('modalEntregaTitle').innerHTML = '<span>✏️</span> Editar Entrega';
+    document.getElementById('entregaFecha').value = ent.fecha;
+    document.getElementById('entregaHora').value = ent.hora !== 'N/A' ? ent.hora : '';
+    document.getElementById('entregaCliente').value = ent.cliente;
+    document.getElementById('entregaCantidad').value = ent.cantidad;
+    document.getElementById('entregaPrecio').value = ent.precioLitro;
+    document.getElementById('entregaTotal').value = ent.total;
+    document.getElementById('entregaEstado').value = ent.estado;
+    document.getElementById('entregaResponsable').value = ent.responsable !== 'N/A' ? ent.responsable : '';
+    document.getElementById('entregaObservaciones').value = ent.observaciones || '';
+
+    currentItemId = id;
+    openEntregaModal();
+}
+
+function deleteEntrega(id) {
+    if (confirm('¿Estás seguro de eliminar este registro de entrega?')) {
+        entregasData = entregasData.filter(e => e.id !== id);
+        renderEntregas();
+        alert('✅ Entrega eliminada correctamente');
+    }
+}
+
+function editCalidad(id) {
+    const cal = calidadData.find(c => c.id === id);
+    if (!cal) return;
+
+    document.getElementById('modalCalidadTitle').innerHTML = '<span>✏️</span> Editar Análisis';
+    document.getElementById('calidadFecha').value = cal.fecha;
+    document.getElementById('calidadTurno').value = cal.turno;
+    document.getElementById('calidadGrasa').value = cal.grasa;
+    document.getElementById('calidadProteina').value = cal.proteina;
+    document.getElementById('calidadUFC').value = cal.ufc;
+    document.getElementById('calidadTemperatura').value = cal.temperatura;
+    document.getElementById('calidadCalificacion').value = cal.calidad;
+    document.getElementById('calidadResponsable').value = cal.responsable !== 'N/A' ? cal.responsable : '';
+    document.getElementById('calidadObservaciones').value = cal.observaciones || '';
+
+    currentItemId = id;
+    openCalidadModal();
+}
+
+function deleteCalidad(id) {
+    if (confirm('¿Estás seguro de eliminar este análisis de calidad?')) {
+        calidadData = calidadData.filter(c => c.id !== id);
+        renderCalidad();
+        alert('✅ Análisis eliminado correctamente');
+    }
+}
+
+// ============================================
+// VER DETALLES
+// ============================================
+function viewDetails(type, id) {
+    let detailsHTML = '';
+
+    if (type === 'ordeno') {
+        const ord = ordenoData.find(o => o.id === id);
+        detailsHTML = `
+            <div class="detail-section">
+                <h3 class="detail-section-title">Información del Ordeño</h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Fecha</div>
+                        <div class="detail-value">${new Date(ord.fecha).toLocaleDateString('es-ES')}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Hora</div>
+                        <div class="detail-value">${ord.hora}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Vaca</div>
+                        <div class="detail-value">${ord.vaca}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Arete</div>
+                        <div class="detail-value">#${ord.arete}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Turno</div>
+                        <div class="detail-value"><span class="badge ${ord.turno.toLowerCase()}">${ord.turno}</span></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Cantidad Producida</div>
+                        <div class="detail-value" style="color: var(--color-primary); font-size: 20px; font-weight: 800;">${ord.litros} Litros</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Ordeñador</div>
+                        <div class="detail-value">${ord.ordenador}</div>
+                    </div>
+                </div>
+                ${ord.observaciones ? `<p style="margin-top:16px; color:#6B7280;"><strong>Observaciones:</strong> ${ord.observaciones}</p>` : ''}
+            </div>
+        `;
+    } else if (type === 'produccion') {
+        const prod = produccionData.find(p => p.id === id);
+        detailsHTML = `
+            <div class="detail-section">
+                <h3 class="detail-section-title">Análisis de Producción</h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Vaca</div>
+                        <div class="detail-value">${prod.vaca}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Arete</div>
+                        <div class="detail-value">#${prod.arete}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Raza</div>
+                        <div class="detail-value">${prod.raza}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Potrero</div>
+                        <div class="detail-value">${prod.potrero}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Total Semana</div>
+                        <div class="detail-value" style="color: var(--color-primary); font-size: 20px; font-weight: 800;">${prod.totalSemana} Litros</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Promedio Diario</div>
+                        <div class="detail-value" style="color: var(--color-success); font-size: 20px; font-weight: 800;">${prod.promedioDia} L/día</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Nivel de Producción</div>
+                        <div class="detail-value"><span class="badge ${prod.nivel}">${prod.nivel === 'alta' ? 'Alta' : prod.nivel === 'media' ? 'Media' : 'Baja'}</span></div>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else if (type === 'entrega') {
+        const ent = entregasData.find(e => e.id === id);
+        detailsHTML = `
+            <div class="detail-section">
+                <h3 class="detail-section-title">Información de la Entrega</h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Fecha</div>
+                        <div class="detail-value">${new Date(ent.fecha).toLocaleDateString('es-ES')}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Hora</div>
+                        <div class="detail-value">${ent.hora}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Cliente</div>
+                        <div class="detail-value">${ent.cliente}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Cantidad</div>
+                        <div class="detail-value">${ent.cantidad} Litros</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Precio por Litro</div>
+                        <div class="detail-value">$${ent.precioLitro}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Total</div>
+                        <div class="detail-value" style="color: var(--color-success); font-size: 20px; font-weight: 800;">$${ent.total}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Estado</div>
+                        <div class="detail-value"><span class="badge ${ent.estado.toLowerCase()}">${ent.estado}</span></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Responsable</div>
+                        <div class="detail-value">${ent.responsable}</div>
+                    </div>
+                </div>
+                ${ent.observaciones ? `<p style="margin-top:16px; color:#6B7280;"><strong>Observaciones:</strong> ${ent.observaciones}</p>` : ''}
+            </div>
+        `;
+    } else if (type === 'calidad') {
+        const cal = calidadData.find(c => c.id === id);
+        detailsHTML = `
+            <div class="detail-section">
+                <h3 class="detail-section-title">Análisis de Calidad</h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Fecha</div>
+                        <div class="detail-value">${new Date(cal.fecha).toLocaleDateString('es-ES')}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Turno</div>
+                        <div class="detail-value"><span class="badge ${cal.turno.toLowerCase()}">${cal.turno}</span></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Grasa</div>
+                        <div class="detail-value">${cal.grasa}%</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Proteína</div>
+                        <div class="detail-value">${cal.proteina}%</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">UFC</div>
+                        <div class="detail-value">${cal.ufc} x1000</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Temperatura</div>
+                        <div class="detail-value">${cal.temperatura}°C</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Calificación</div>
+                        <div class="detail-value"><span class="badge ${cal.calidad.toLowerCase()}">${cal.calidad}</span></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Responsable</div>
+                        <div class="detail-value">${cal.responsable}</div>
+                    </div>
+                </div>
+                ${cal.observaciones ? `<p style="margin-top:16px; color:#6B7280;"><strong>Observaciones:</strong> ${cal.observaciones}</p>` : ''}
+            </div>
+        `;
+    }
+
+    document.getElementById('detailsContent').innerHTML = detailsHTML;
+    document.getElementById('modalDetails').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+// ============================================
+// CALCULAR TOTAL AUTOMÁTICO EN ENTREGAS
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+    const cantidadInput = document.getElementById('entregaCantidad');
+    const precioInput = document.getElementById('entregaPrecio');
+    const totalInput = document.getElementById('entregaTotal');
+
+    function calcularTotal() {
+        const cantidad = parseFloat(cantidadInput.value) || 0;
+        const precio = parseFloat(precioInput.value) || 0;
+        const total = (cantidad * precio).toFixed(2);
+        totalInput.value = `$${total}`;
+    }
+
+    if (cantidadInput && precioInput) {
+        cantidadInput.addEventListener('input', calcularTotal);
+        precioInput.addEventListener('input', calcularTotal);
+    }
+});
+
+// ============================================
+// EVENT LISTENERS
+// ============================================
+document.getElementById('btnAddOrdeno').addEventListener('click', () => {
+    document.getElementById('modalOrdenoTitle').innerHTML = '<span>🥛</span> Registrar Ordeño';
+    document.getElementById('ordenoForm').reset();
+    // Setear fecha y hora actual por defecto
+    const now = new Date();
+    document.getElementById('ordenoFecha').value = now.toISOString().split('T')[0];
+    document.getElementById('ordenoHora').value = now.toTimeString().slice(0, 5);
+    currentItemId = null;
+    openOrdenoModal();
+});
+
+document.getElementById('btnAddEntrega').addEventListener('click', () => {
+    document.getElementById('modalEntregaTitle').innerHTML = '<span>🚚</span> Nueva Entrega';
+    document.getElementById('entregaForm').reset();
+    // Setear fecha actual por defecto
+    document.getElementById('entregaFecha').value = new Date().toISOString().split('T')[0];
+    currentItemId = null;
+    openEntregaModal();
+});
+
+document.getElementById('btnAddCalidad').addEventListener('click', () => {
+    document.getElementById('modalCalidadTitle').innerHTML = '<span>🧪</span> Nuevo Análisis de Calidad';
+    document.getElementById('calidadForm').reset();
+    // Setear fecha actual por defecto
+    document.getElementById('calidadFecha').value = new Date().toISOString().split('T')[0];
+    currentItemId = null;
+    openCalidadModal();
+});
+
+// Cerrar modales al hacer click fuera
+document.querySelectorAll('.modal-overlay').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    });
+});
+
+// ============================================
+// BÚSQUEDA Y FILTROS
+// ============================================
+document.getElementById('searchOrdeno')?.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const filteredData = ordenoData.filter(ord => 
+        ord.vaca.toLowerCase().includes(searchTerm) ||
+        ord.arete.includes(searchTerm) ||
+        ord.ordenador.toLowerCase().includes(searchTerm)
+    );
+    renderFilteredOrdeno(filteredData);
+});
+
+document.getElementById('filterTurno')?.addEventListener('change', (e) => {
+    const turno = e.target.value;
+    const filteredData = turno ? ordenoData.filter(ord => ord.turno === turno) : ordenoData;
+    renderFilteredOrdeno(filteredData);
+});
+
+function renderFilteredOrdeno(data) {
+    const tbody = document.getElementById('ordenoTableBody');
+    
+    if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#6B7280; padding:40px;">No se encontraron resultados</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = data.map(ord => `
+        <tr>
+            <td><strong>${ord.vaca}</strong></td>
+            <td><span class="badge" style="background: var(--color-primary-light); color: var(--color-primary);">#${ord.arete}</span></td>
+            <td><span class="badge ${ord.turno.toLowerCase()}">${ord.turno}</span></td>
+            <td><strong style="color: var(--color-primary); font-size: 16px;">${ord.litros} L</strong></td>
+            <td>${ord.hora}</td>
+            <td>${ord.ordenador}</td>
+            <td>${ord.observaciones || 'N/A'}</td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-action btn-view" onclick="viewDetails('ordeno', '${ord.id}')" title="Ver">👁️</button>
+                    <button class="btn-action btn-edit" onclick="editOrdeno('${ord.id}')" title="Editar">✏️</button>
+                    <button class="btn-action btn-delete" onclick="deleteOrdeno('${ord.id}')" title="Eliminar">🗑️</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// ============================================
+// INICIALIZAR
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+    renderOrdeno();
+});
+</script>

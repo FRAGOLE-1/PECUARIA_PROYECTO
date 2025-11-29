@@ -1,0 +1,1107 @@
+<!-- ============================================
+     MÓDULO: DASHBOARD MODERNO
+     Sistema CattleSIS - Gestión Ganadera
+============================================ -->
+
+<style>
+    /* Variables de colores */
+    :root {
+        --color-primary: #10B981;
+        --color-primary: #3B82F6;
+        --color-primary: #F59E0B;
+        --color-alertas: #EF4444;
+        --color-salud: #8B5CF6;
+    }
+
+    .dashboard-container {
+        max-width: 1800px;
+        margin: 0 auto;
+        animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header con fecha y saludo */
+    
+    .dashboard-header {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 32px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-primary);
+    }
+    .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    .greeting {
+        font-size: 28px;
+        font-weight: 800;
+    }
+
+    .date-time {
+        text-align: right;
+        opacity: 0.9;
+    }
+
+    .current-date {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .current-time {
+        font-size: 14px;
+        opacity: 0.8;
+    }
+
+    .header-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        margin-top: 20px;
+    }
+
+    .header-stat {
+        text-align: center;
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+    }
+
+    .header-stat-value {
+        font-size: 32px;
+        font-weight: 800;
+        margin-bottom: 4px;
+    }
+
+    .header-stat-label {
+        font-size: 13px;
+        opacity: 0.9;
+    }
+
+    /* Grid principal */
+    .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    /* KPIs mejorados */
+    .kpi-section {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .kpi-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .kpi-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100px;
+        height: 100px;
+        background: currentColor;
+        opacity: 0.05;
+        border-radius: 50%;
+        transform: translate(30%, -30%);
+    }
+
+    /* 🔹 Efecto adicional para accesos directos */
+    .kpi-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    cursor: pointer; /* cambia el puntero a “mano” */
+}
+
+
+    .kpi-card.produccion {
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+    }
+
+    .kpi-card.animales {
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+    }
+
+    .kpi-card.finanzas {
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+    }
+
+    .kpi-card.alertas {
+        border-color: var(--color-alertas);
+        color: var(--color-alertas);
+    }
+
+    .kpi-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+
+    .kpi-icon {
+        width: 56px;
+        height: 56px;
+        background: var(--color-primary);
+        color: white;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .kpi-trend {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 700;
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--color-primary);
+    }
+
+    .kpi-trend.down {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--color-alertas);
+    }
+
+    .kpi-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .kpi-value {
+        font-size: 42px;
+        font-weight: 900;
+        color: #1F2937;
+        margin-bottom: 8px;
+        line-height: 1;
+    }
+
+    .kpi-label {
+        font-size: 15px;
+        font-weight: 600;
+        color: #6B7280;
+        margin-bottom: 12px;
+    }
+
+    .kpi-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 12px;
+        border-top: 2px solid #F3F4F6;
+        font-size: 13px;
+        color: #9CA3AF;
+    }
+
+    .kpi-change {
+        font-weight: 700;
+        color: var(--color-primary);
+    }
+
+    /* Sidebar derecho */
+    .sidebar-widgets {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .widget {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .widget-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #F3F4F6;
+    }
+
+    .widget-icon {
+        font-size: 24px;
+    }
+
+    .widget-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1F2937;
+    }
+
+    /* Widget de Clima */
+    .weather-widget {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .weather-main {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    .weather-temp {
+        font-size: 48px;
+        font-weight: 900;
+    }
+
+    .weather-icon {
+        font-size: 64px;
+    }
+
+    .weather-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .weather-item {
+        background: rgba(255, 255, 255, 0.15);
+        padding: 12px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .weather-item-value {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .weather-item-label {
+        font-size: 12px;
+        opacity: 0.8;
+    }
+
+    /* Widget de Eventos */
+    .event-item {
+        display: flex;
+        gap: 12px;
+        padding: 12px;
+        background: #F9FAFB;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        border-left: 3px solid;
+    }
+
+    .event-item.urgente {
+        border-color: var(--color-alertas);
+    }
+
+    .event-item.proximo {
+        border-color: var(--color-primary);
+    }
+
+    .event-item.normal {
+        border-color: var(--color-primary);
+    }
+
+    .event-date {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        padding: 8px;
+        border-radius: 8px;
+        min-width: 50px;
+    }
+
+    .event-day {
+        font-size: 24px;
+        font-weight: 800;
+        color: #1F2937;
+        line-height: 1;
+    }
+
+    .event-month {
+        font-size: 11px;
+        color: #6B7280;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .event-content {
+        flex: 1;
+    }
+
+    .event-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1F2937;
+        margin-bottom: 2px;
+    }
+
+    .event-desc {
+        font-size: 12px;
+        color: #6B7280;
+    }
+
+    /* Widget de Tareas */
+    .task-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        transition: background 0.2s ease;
+        cursor: pointer;
+    }
+
+    .task-item:hover {
+        background: #F9FAFB;
+    }
+
+    .task-checkbox {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #D1D5DB;
+        border-radius: 6px;
+        flex-shrink: 0;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .task-checkbox.checked {
+        background: var(--color-primary);
+        border-color: var(--color-primary);
+        position: relative;
+    }
+
+    .task-checkbox.checked::after {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .task-text {
+        flex: 1;
+        font-size: 14px;
+        color: #1F2937;
+    }
+
+    .task-text.completed {
+        text-decoration: line-through;
+        opacity: 0.5;
+    }
+
+    /* Gráficos */
+    .chart-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 24px;
+    min-height: 320px;        /* antes height fijo */
+    overflow: visible;        /* permite mostrar las tablas sin romper diseño */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* mantiene encabezado + gráfica + tabla ordenados */
+}
+
+
+
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .chart-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1F2937;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .chart-filters {
+        display: flex;
+        gap: 8px;
+    }
+
+    .filter-btn {
+        padding: 8px 16px;
+        border: 2px solid #E5E7EB;
+        background: white;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #6B7280;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover {
+        border-color: #4A90E2;
+        color: #4A90E2;
+    }
+
+    .filter-btn.active {
+        background: #4A90E2;
+        border-color: #4A90E2;
+        color: white;
+    }
+
+    /* Grid de gráficos */
+    .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* equilibrio entre ambos gráficos */
+    gap: 24px;
+    align-items: start; /* evita que una tarjeta empuje la otra */
+    margin-bottom: 24px;
+}
+
+    /* Alertas y Actividad */
+    .bottom-section {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 24px;
+    }
+
+    .section-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid #F3F4F6;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1F2937;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .section-link {
+        font-size: 14px;
+        color: #4A90E2;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .section-link:hover {
+        color: #357ABD;
+    }
+
+    /* Alertas */
+    .alert-item {
+        display: flex;
+        gap: 14px;
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        border-left: 4px solid;
+        transition: all 0.2s ease;
+    }
+
+    .alert-item.hidden,
+.activity-item.hidden {
+    opacity: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    transform: translateY(-5px);
+    transition: all 0.4s ease;
+}
+
+
+
+
+/* 🔹 Transición cuando aparecen */
+.alert-item,
+.activity-item {
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+
+    .alert-item:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .alert-item.urgente {
+        background: #FEF2F2;
+        border-color: #EF4444;
+    }
+
+    .alert-item.advertencia {
+        background: #FFFBEB;
+        border-color: #F59E0B;
+    }
+
+    .alert-item.info {
+        background: #EFF6FF;
+        border-color: #3B82F6;
+    }
+
+    .alert-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .alert-content {
+        flex: 1;
+    }
+
+    .alert-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1F2937;
+        margin-bottom: 4px;
+    }
+
+    .alert-desc {
+        font-size: 13px;
+        color: #6B7280;
+        line-height: 1.5;
+    }
+
+    /* Actividad */
+    .activity-item {
+        display: flex;
+        gap: 12px;
+        padding: 14px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        transition: background 0.2s ease;
+    }
+
+    .activity-item:hover {
+        background: #F9FAFB;
+    }
+
+    .activity-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+    .activity-content {
+        flex: 1;
+    }
+
+    .activity-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1F2937;
+        margin-bottom: 2px;
+    }
+
+    .activity-desc {
+        font-size: 13px;
+        color: #6B7280;
+    }
+
+    .activity-time {
+        font-size: 12px;
+        color: #9CA3AF;
+        white-space: nowrap;
+        font-weight: 600;
+    }
+
+    /* Responsive */
+    @media (max-width: 1400px) {
+        .main-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .sidebar-widgets {
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+        
+        .widget {
+            flex: 1;
+            min-width: 300px;
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .header-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .bottom-section {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .kpi-section {
+            grid-template-columns: 1fr;
+        }
+        
+        .header-stats {
+            grid-template-columns: 1fr;
+        }
+    }
+    /* 🔹 Corrige la alineación vertical de la columna derecha */
+.sidebar-widgets {
+    align-self: start;
+}
+
+.section-card.expandable {
+    overflow: hidden;
+    transition: all 0.5s ease-in-out;
+}
+
+.section-card.collapsed {
+    max-height: 400px;
+    opacity: 1;
+}
+
+.section-card.expanded {
+    max-height: 1500px;
+    opacity: 1;
+}
+
+.alert-item.hidden,
+.activity-item.hidden {
+    opacity: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    transform: translateY(-5px);
+}
+
+
+/* Estilo del botón (sin cambios visuales) */
+.section-link {
+    cursor: pointer;
+    user-select: none;
+    font-weight: 600;
+    color: #4A90E2;
+    transition: color 0.2s ease;
+}
+
+.section-link:hover {
+    text-decoration: underline;
+    color: #2563EB;
+}
+
+
+/* 🆕 Gráficas modernas sin deformación */
+.chart-card canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 260px;
+}
+
+
+
+</style>
+
+<div class="dashboard-container">
+    <!-- Header con resumen ejecutivo -->
+    <div class="dashboard-header">
+        <div class="header-top">
+            <div>
+                <div class="greeting">¡Hola, <span id="userName">Usuario</span>! 👋</div>
+                <p style="opacity: 0.9; margin-top: 8px;">Aquí está el resumen de tu operación ganadera</p>
+            </div>
+            <div class="date-time">
+                <div class="current-date" id="currentDate"></div>
+                <div class="current-time" id="currentTime"></div>
+            </div>
+        </div>
+        
+        <div class="header-stats">
+            <div class="header-stat">
+                <div class="header-stat-value">234</div>
+                <div class="header-stat-label">Total Animales</div>
+            </div>
+            <div class="header-stat">
+                <div class="header-stat-value">2,874 L</div>
+                <div class="header-stat-label">Producción Hoy</div>
+            </div>
+            <div class="header-stat">
+                <div class="header-stat-value">$45,230</div>
+                <div class="header-stat-label">Ingresos Mes</div>
+            </div>
+            <div class="header-stat">
+                <div class="header-stat-value">94%</div>
+                <div class="header-stat-label">Salud del Hato</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid principal -->
+<div class="main-grid">
+    <!-- 🟩 Columna Izquierda (KPIs + Gráficos) -->
+    <div>
+        <!-- KPIs -->
+        <div class="kpi-section">
+            <!-- Producción -->
+            <div class="kpi-card produccion" data-module="production">
+                <div class="kpi-header">
+                    <div class="kpi-icon">🥛</div>
+                    <div class="kpi-trend">↑ 12%</div>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-value">2,874 L</div>
+                    <div class="kpi-label">Producción de Leche Hoy</div>
+                    <div class="kpi-footer">
+                        <span>vs ayer</span>
+                        <span class="kpi-change">+320 L</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Animales -->
+            <div class="kpi-card animales" data-module="animals">
+                <div class="kpi-header">
+                    <div class="kpi-icon">🐄</div>
+                    <div class="kpi-trend">↑ 2.1%</div>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-value">234</div>
+                    <div class="kpi-label">Total de Animales</div>
+                    <div class="kpi-footer">
+                        <span>vs mes anterior</span>
+                        <span class="kpi-change">+5 animales</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Finanzas -->
+            <div class="kpi-card finanzas" data-module="finance">
+                <div class="kpi-header">
+                    <div class="kpi-icon">💰</div>
+                    <div class="kpi-trend">↑ 8%</div>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-value">$45,230</div>
+                    <div class="kpi-label">Ingresos del Mes</div>
+                    <div class="kpi-footer">
+                        <span>vs mes anterior</span>
+                        <span class="kpi-change">+$3,340</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alertas -->
+            <div class="kpi-card alertas" data-module="health">
+                <div class="kpi-header">
+                    <div class="kpi-icon">⚠️</div>
+                    <div class="kpi-trend down">Urgente</div>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-value">7</div>
+                    <div class="kpi-label">Alertas Críticas</div>
+                    <div class="kpi-footer">
+                        <span>requieren atención</span>
+                        <span class="kpi-change" style="color: var(--color-alertas);">3 urgentes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 📈 Gráfico Principal -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <div class="chart-title">📈 Tendencia de Producción</div>
+                <div class="chart-filters">
+                    <button class="filter-btn active" data-range="semana">Semana</button>
+                    <button class="filter-btn" data-range="mes">Mes</button>
+                    <button class="filter-btn" data-range="trimestre">Trimestre</button>
+                </div>
+            </div>
+
+            <canvas id="produccionChart"></canvas>
+        </div>
+
+        <!-- 📊 Gráficos secundarios -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">📊 Distribución de Animales</div>
+                </div>
+
+                <canvas id="distribucionChart"></canvas>
+
+                <table style="width:100%; margin-top:16px; border-collapse:collapse; font-size:13px;">
+                    <thead>
+                        <tr style="background:#F9FAFB; color:#374151;">
+                            <th style="padding:8px; text-align:left;">Categoría</th>
+                            <th style="padding:8px; text-align:center;">Cantidad</th>
+                            <th style="padding:8px; text-align:center;">Porcentaje</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaDistribucion"></tbody>
+                </table>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">💵 Balance Financiero</div>
+                </div>
+
+                <canvas id="finanzasChart"></canvas>
+
+                <table style="width:100%; margin-top:16px; border-collapse:collapse; font-size:13px;">
+                    <thead>
+                        <tr style="background:#F9FAFB; color:#374151;">
+                            <th style="padding:8px; text-align:left;">Semana</th>
+                            <th style="padding:8px; text-align:center;">Ingresos ($)</th>
+                            <th style="padding:8px; text-align:center;">Gastos ($)</th>
+                            <th style="padding:8px; text-align:center;">Balance ($)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaFinanzas"></tbody>
+                </table>
+            </div>
+        </div>
+    </div> <!-- ✅ Fin columna izquierda -->
+
+    <!-- 🟦 Columna Derecha (Widgets) -->
+    <div class="sidebar-widgets">
+        <!-- 🌤️ Clima -->
+        <div class="widget weather-widget">
+            <div class="widget-header" style="border-color: rgba(255,255,255,0.2);">
+                <span class="widget-icon">🌤️</span>
+                <span class="widget-title">Clima Actual</span>
+            </div>
+            <div class="weather-main">
+                <div>
+                    <div class="weather-temp">24°C</div>
+                    <div>Parcialmente Nublado</div>
+                </div>
+                <div class="weather-icon">☁️</div>
+            </div>
+            <div class="weather-details">
+                <div class="weather-item">
+                    <div class="weather-item-value">💧 65%</div>
+                    <div class="weather-item-label">Humedad</div>
+                </div>
+                <div class="weather-item">
+                    <div class="weather-item-value">🌬️ 12 km/h</div>
+                    <div class="weather-item-label">Viento</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 📅 Eventos -->
+        <div class="widget">
+            <div class="widget-header">
+                <span class="widget-icon">📅</span>
+                <span class="widget-title">Próximos Eventos</span>
+            </div>
+            <div class="event-item urgente">
+                <div class="event-date"><div class="event-day">18</div><div class="event-month">OCT</div></div>
+                <div class="event-content"><div class="event-title">Parto Programado</div><div class="event-desc">Vaca #142 - Mañana</div></div>
+            </div>
+            <div class="event-item proximo">
+                <div class="event-date"><div class="event-day">20</div><div class="event-month">OCT</div></div>
+                <div class="event-content"><div class="event-title">Vacunación Masiva</div><div class="event-desc">50 animales - Antiaftosa</div></div>
+            </div>
+            <div class="event-item normal">
+                <div class="event-date"><div class="event-day">22</div><div class="event-month">OCT</div></div>
+                <div class="event-content"><div class="event-title">Rotación de Potrero</div><div class="event-desc">Sector Norte</div></div>
+            </div>
+        </div>
+
+        <!-- ✅ Tareas -->
+        <div class="widget">
+            <div class="widget-header">
+                <span class="widget-icon">✅</span>
+                <span class="widget-title">Tareas de Hoy</span>
+            </div>
+            <div class="task-item"><div class="task-checkbox checked"></div><div class="task-text completed">Ordeño matutino completado</div></div>
+            <div class="task-item"><div class="task-checkbox checked"></div><div class="task-text completed">Revisión de comederos</div></div>
+            <div class="task-item"><div class="task-checkbox"></div><div class="task-text">Registro de producción</div></div>
+            <div class="task-item"><div class="task-checkbox"></div><div class="task-text">Control sanitario sector B</div></div>
+            <div class="task-item"><div class="task-checkbox"></div><div class="task-text">Ordeño vespertino</div></div>
+        </div>
+    </div> <!-- ✅ Fin columna derecha -->
+</div> <!-- ✅ Fin main-grid -->
+
+<!-- 🚨 Sección inferior -->
+<div class="bottom-section">
+
+    <!-- 🟩 Actividad Reciente -->
+    <div class="section-card expandable">
+
+
+        <div class="section-header">
+            <div class="section-title">🚨 Alertas Críticas</div>
+            <a href="#" class="section-link toggle-alertas">Ver más ↓</a>
+        </div>
+
+        <div class="alert-item urgente">
+            <div class="alert-icon" style="background:#FEE2E2;color:#EF4444;">💉</div>
+            <div class="alert-content">
+                <div class="alert-title">Vacuna Antiaftosa Vencida</div>
+                <div class="alert-desc">12 animales requieren vacunación inmediata en las próximas 24 horas</div>
+            </div>
+        </div>
+
+        <div class="alert-item urgente">
+            <div class="alert-icon" style="background:#FEE2E2;color:#EF4444;">🤰</div>
+            <div class="alert-content">
+                <div class="alert-title">Partos Próximos</div>
+                <div class="alert-desc">2 vacas con parto esperado en 48 horas - Preparar área de maternidad</div>
+            </div>
+        </div>
+
+        <div class="alert-item advertencia">
+            <div class="alert-icon" style="background:#FEF3C7;color:#F59E0B;">🌾</div>
+            <div class="alert-content">
+                <div class="alert-title">Stock de Alimento Bajo</div>
+                <div class="alert-desc">Concentrado suficiente para 3 días - Contactar proveedor</div>
+            </div>
+        </div>
+
+        <div class="alert-item advertencia">
+            <div class="alert-icon" style="background:#FEF3C7;color:#F59E0B;">💰</div>
+            <div class="alert-content">
+                <div class="alert-title">Pago Proveedor Pendiente</div>
+                <div class="alert-desc">Vencimiento hoy - $5,430 a Alimentos del Campo S.A.</div>
+            </div>
+        </div>
+
+        <div class="alert-item info">
+            <div class="alert-icon" style="background:#DBEAFE;color:#3B82F6;">🔄</div>
+            <div class="alert-content">
+                <div class="alert-title">Rotación de Potrero Programada</div>
+                <div class="alert-desc">Potrero Norte - Mañana a las 8:00 AM</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🟩 Actividad Reciente -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-title">📋 Actividad Reciente</div>
+            <a href="#" class="section-link toggle-actividad">Ver más ↓</a>
+        </div>
+
+        <div class="activity-item">
+            <div class="activity-icon">🐄</div>
+            <div class="activity-content">
+                <div class="activity-title">Nuevo animal registrado</div>
+                <div class="activity-desc">Vaca #245 - Holstein - Potrero Sur</div>
+            </div>
+            <div class="activity-time">Hace 1h</div>
+        </div>
+
+        <div class="activity-item">
+            <div class="activity-icon">💉</div>
+            <div class="activity-content">
+                <div class="activity-title">Vacunación completada</div>
+                <div class="activity-desc">15 animales - Antiaftosa</div>
+            </div>
+            <div class="activity-time">Hace 3h</div>
+        </div>
+
+        <div class="activity-item">
+            <div class="activity-icon">🥛</div>
+            <div class="activity-content">
+                <div class="activity-title">Registro de producción</div>
+                <div class="activity-desc">2,874 L recolectados - Turno mañana</div>
+            </div>
+            <div class="activity-time">Hace 5h</div>
+        </div>
+
+        <div class="activity-item">
+            <div class="activity-icon">💰</div>
+            <div class="activity-content">
+                <div class="activity-title">Venta registrada</div>
+                <div class="activity-desc">1,200 L - $4,800 a Lácteos Premium</div>
+            </div>
+            <div class="activity-time">Ayer</div>
+        </div>
+
+        <div class="activity-item">
+            <div class="activity-icon">📊</div>
+            <div class="activity-content">
+                <div class="activity-title">Reporte generado</div>
+                <div class="activity-desc">Informe mensual octubre 2024</div>
+            </div>
+            <div class="activity-time">Ayer</div>
+        </div>
+
+        <div class="activity-item">
+            <div class="activity-icon">🔄</div>
+            <div class="activity-content">
+                <div class="activity-title">Rotación de potrero</div>
+                <div class="activity-desc">45 animales movidos al Sector Este</div>
+            </div>
+            <div class="activity-time">2 días</div>
+        </div>
+    </div>
+
+</div> <!-- ✅ Fin de bottom-section -->
+
+
+
+
+

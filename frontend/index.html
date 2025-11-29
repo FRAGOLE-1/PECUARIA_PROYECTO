@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CattleSIS - Sistema de Gestión Ganadera</title>
+    <link href="./css/colors.css" rel="stylesheet"> <!-- ✅ AGREGAR PRIMERO -->
+    <link href="./css/styles.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Librería para gráficas Chart.js -->
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #F7F9FC;
+            overflow: hidden;
+        }
+
+        /* ============================================
+           LAYOUT PRINCIPAL
+        ============================================ */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ============================================
+           SIDEBAR - COLAPSADO POR DEFECTO
+        ============================================ */
+        .sidebar {
+            width: 70px; /* 👈 COLAPSADO por defecto */
+            background-color: #2D3748;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        /* Al hacer HOVER se expande */
+        .sidebar:hover {
+            width: 260px;
+        }
+
+        /* Si está "pinneado", mantiene el ancho expandido */
+        .sidebar.pinned {
+            width: 260px;
+        }
+
+        /* Logo */
+        .sidebar-logo {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            min-height: 70px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar:hover .logo-text,
+        .sidebar.pinned .logo-text {
+            opacity: 1;
+        }
+
+        /* Botón PIN para mantener expandido */
+        .pin-button {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar:hover .pin-button,
+        .sidebar.pinned .pin-button {
+            display: flex;
+        }
+
+        .pin-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .pin-button svg {
+            width: 16px;
+            height: 16px;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.pinned .pin-button svg {
+            transform: rotate(45deg);
+        }
+
+        /* Navegación */
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px 8px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .sidebar-nav::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+
+        }
+        /* ============================================
+        SIDEBAR FOOTER - CONFIGURACIÓN
+        ============================================ */
+        .sidebar-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 8px;
+            margin-top: auto; /* Empuja hacia abajo */
+        }
+
+        .settings-button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            color: #9CA3AF;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+            white-space: nowrap;
+            justify-content: flex-start;
+        }
+
+        .settings-button:hover {
+            background-color: #374151;
+            color: white;
+        }
+
+        .settings-button.active {
+            background-color: #4A90E2;
+            color: white;
+            font-weight: 600;
+        }
+
+        .settings-button .nav-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-button .nav-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .settings-button .nav-item-text {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            overflow: hidden;
+        }
+
+        .sidebar:hover .settings-button .nav-item-text,
+        .sidebar.pinned .settings-button .nav-item-text {
+            opacity: 1;
+        }
+
+        /* Tooltip para configuración */
+        .settings-button::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 70px;
+            background: #1F2937;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar:not(:hover):not(.pinned) .settings-button:hover::after {
+            opacity: 1;
+        }
+
+        /* Items de navegación */
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin-bottom: 4px;
+            color: #E2E8F0;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+            white-space: nowrap;
+            justify-content: flex-start;
+        }
+
+        .nav-item:hover {
+            background-color: #374151;
+            color: white;
+        }
+
+        .nav-item.active {
+            background-color: var(--color-primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .nav-item-text {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            overflow: hidden;
+        }
+
+        .sidebar:hover .nav-item-text,
+        .sidebar.pinned .nav-item-text {
+            opacity: 1;
+        }
+
+        /* Tooltip para modo colapsado */
+        .nav-item::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 70px;
+            background: #1F2937;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Mostrar tooltip SOLO cuando está colapsado y NO está en hover del sidebar */
+        .sidebar:not(:hover):not(.pinned) .nav-item:hover::after {
+            opacity: 1;
+        }
+
+        /* Indicador de expandir */
+        .expand-indicator {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 60px;
+            background: linear-gradient(180deg, transparent 0%, #4A90E2 50%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar:not(.pinned):not(:hover) .expand-indicator {
+            opacity: 0.5;
+        }
+
+        /* ============================================
+           CONTENIDO PRINCIPAL
+        ============================================ */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            border-bottom: 1px solid #E5E7EB;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1F2937;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* Notificaciones */
+        .notification-btn {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #F3F4F6;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .notification-btn:hover {
+            background: var(--color-primary-very-light);
+        }
+
+        .notification-btn svg {
+            width: 20px;
+            height: 20px;
+            color: #4B5563;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #EF4444;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* Usuario */
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            background: #F3F4F6;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-menu:hover {
+            background: #E5E7EB;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1F2937;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #6B7280;
+        }
+
+        /* Contenido del módulo */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        /* ============================================
+           BIENVENIDA
+        ============================================ */
+        .welcome-screen {
+            text-align: center;
+            padding: 100px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .welcome-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 32px;
+            box-shadow: 0 20px 40px rgba(74, 144, 226, 0.3);
+        }
+
+        .welcome-icon svg {
+            width: 60px;
+            height: 60px;
+            color: white;
+        }
+
+        .welcome-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: #1F2937;
+            margin-bottom: 16px;
+        }
+
+        .welcome-subtitle {
+            font-size: 18px;
+            color: #6B7280;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .welcome-hint {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: #EFF6FF;
+            padding: 16px 24px;
+            border-radius: 12px;
+            color: #1E40AF;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .welcome-hint svg {
+            width: 24px;
+            height: 24px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* ============================================
+           RESPONSIVE
+        ============================================ */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100vh;
+                z-index: 2000;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+                width: 260px;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .header-title {
+                font-size: 18px;
+            }
+        }
+    </style>
+
+    
+
+</head>
+<body>
+    <div class="app-container">
+        <!-- ============================================
+            SIDEBAR COLAPSADO
+        ============================================ -->
+        <aside class="sidebar" id="sidebar">
+            <!-- Indicador visual de "expandir" -->
+            <div class="expand-indicator"></div>
+
+            <!-- Logo -->
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <span class="logo-text">CattleSIS</span>
+
+                <!-- Botón PIN -->
+                <button class="pin-button" id="pinButton" title="Mantener expandido">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Navegación -->
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-module="dashboard" data-tooltip="Dashboard">
+                    <div class="nav-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                    </div>
+                    <span class="nav-item-text">Dashboard</span>
+                </a>
+
+                <a href="#" class="nav-item" data-module="animals" data-tooltip="Animales">
+                    <div class="nav-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                        </svg>
+                    </div>
+                    <span class="nav-item-text">Animales</span>
+                </a>
+
+                <a href="#" class="nav-item" data-module="farms" data-tooltip="Fincas y Potreros">
+                    <div class="nav-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <span class="nav-item-text">Fincas</span>
+                </a>
+
+                <a href="#" class="nav-item" data-module="reproduction" data-tooltip="Reproducción">
+                    <div class="nav-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                    </div>
+                    <span class="nav-item-text">Reproducción</span>
+                </a>
+
+                <a href="#" class="nav-item" data-module="health" data-tooltip="Sanidad">
+                    <div class="nav-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                    <span class="nav-item-text">Sanidad</span>
+                </a>
+
+                <a href="#" class="nav-item" data-module="feed" data-tooltip="Alimentación">
+                    <div class="nav-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                    </div>
+                    <span class="nav-item-text">Alimentación</span>
+                </a>
+
+                <a href="#" class="nav-item" data-module="production" data-tooltip="Producción">
+                    <div class="nav-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    </div>
+                    <span class="nav-item-text">Producción</span>
+                </a>
+
+                <a href="#" class="nav-item" data-module="finance" data-tooltip="Finanzas">
+                    <div class="nav-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <span class="nav-item-text">Finanzas</span>
+                </a>
+
+                <a href="#" class="nav-item" data-module="inventory" data-tooltip="Inventario">
+                    <div class="nav-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                    </div>
+                    <span class="nav-item-text">Inventario</span>
+                </a>
+
+                <a href="#" class="nav-item" data-module="reports" data-tooltip="Reportes">
+                    <div class="nav-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    </div>
+                    <span class="nav-item-text">Reportes</span>
+                </a>
+            </nav>
+
+            <!-- ============================================
+                FOOTER: CONFIGURACIÓN (ABAJO)
+            ============================================ -->
+            <div class="sidebar-footer">
+                <a href="#" class="settings-button" data-module="settings" data-tooltip="Configuración">
+                    <div class="nav-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </div>
+                    <span class="nav-item-text">Configuración</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- ============================================
+             CONTENIDO PRINCIPAL
+        ============================================ -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1 class="header-title" id="moduleTitle">Dashboard</h1>
+                </div>
+                <div class="header-actions">
+                    <!-- Botón de Notificaciones -->
+                    <div class="dropdown" id="notificationsDropdown">
+                        <button class="header-btn" onclick="NotificationManager.toggle()">
+                            🔔
+                            <span class="notification-badge" id="notificationBadge"></span>
+                        </button>
+                        <div class="dropdown-menu" id="notificationsMenu">
+                            <!-- El contenido se carga dinámicamente -->
+                        </div>
+                    </div>
+
+                    <!-- Botón de Usuario -->
+                    <div class="dropdown" id="userDropdown">
+                        <button class="user-button" onclick="UserManager.toggle()">
+                            <div class="user-avatar" id="userAvatar">JP</div>
+                            <div class="user-info">
+                                <span class="user-name" id="userName">Cargando...</span>
+                                <span class="user-role" id="userRole">...</span>
+                            </div>
+                            <span style="font-size: 12px; color: #9CA3AF;">▼</span>
+                        </button>
+                        <div class="dropdown-menu" id="userMenu">
+                            <!-- El contenido se carga dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <!-- Notificaciones -->
+                    <button class="notification-btn" id="notificationBtn">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                        <span class="notification-badge">7</span>
+                    </button>
+
+                </div>
+            </header>
+
+            <!-- Área de contenido dinámico -->
+            <div class="content-area" id="contentArea">
+                <!-- Pantalla de bienvenida -->
+                <div class="welcome-screen">
+                    <div class="welcome-icon">
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                    </div>
+                    <h2 class="welcome-title">¡Bienvenido a CattleSIS!</h2>
+                    <p class="welcome-subtitle">
+                        Sistema Profesional de Gestión Ganadera<br>
+                        Gestiona tu ganado de manera eficiente y moderna
+                    </p>
+                    <div class="welcome-hint">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        <span>Pasa el cursor sobre el sidebar para ver los módulos →</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ============== SISTEMA DE NAVEGACIÓN ENTRE MÓDULOS ============== -->
+    <script>
+    const navItems = document.querySelectorAll('.nav-item, .settings-button');
+    const moduleTitle = document.getElementById('moduleTitle');
+    const contentArea = document.getElementById('contentArea');
+
+    function loadModule(moduleName) {
+        contentArea.innerHTML = `
+            <div style="text-align:center; padding:100px 20px;">
+                <div style="font-size:48px; margin-bottom:16px;">⏳</div>
+                <div style="font-size:18px; color:#6B7280;">Cargando módulo...</div>
+            </div>`;
+
+        fetch(`./modules/${moduleName}.html`)
+            .then(res => {
+                if (!res.ok) throw new Error("Módulo no encontrado");
+                return res.text();
+            })
+            .then(html => {
+                contentArea.innerHTML = html;
+
+                // Inicializar módulo Reproducción
+                if (moduleName === "reproduction") {
+                    const wait = setInterval(() => {
+                        if (typeof window.initializeReproduccionModule === "function") {
+                            clearInterval(wait);
+                            window.initializeReproduccionModule();
+                        }
+                    }, 50);
+                }
+
+                if (moduleName === "farms") {
+                    // Cargar farms.js una sola vez
+                    if (!window.farmsLoaded) {
+                        const script = document.createElement("script");
+                        script.src = "./js/farms.js";
+                        script.onload = () => {
+                            console.log("🌾 farms.js cargado");
+                            window.farmsLoaded = true;
+                            window.initFarmsModule();
+                    };
+                    document.body.appendChild(script);
+                } else {
+                    // Si ya fue cargado, solo inicializar
+                    window.initFarmsModule();
+                }
+            }
+
+
+
+                // Inicializar módulo Animals   
+                if (moduleName === "animals") {
+                    const waitA = setInterval(() => {
+                        if (typeof window.initAnimalsModule === "function") {
+                            clearInterval(waitA);
+                            window.initAnimalsModule();
+                        }
+                    }, 50);
+                }
+
+                
+
+                if (moduleName === "dashboard") {
+                    const waitDashReal = setInterval(() => {
+                         const canvas = document.getElementById("produccionChart");
+
+                        if (canvas) {
+                            clearInterval(waitDashReal);
+
+                             if (typeof reinitializeDashboardFeatures === "function") {
+                                reinitializeDashboardFeatures();
+                            }
+                            if (typeof initDashboardCharts === "function") {
+                                initDashboardCharts();
+                            }
+
+                             console.log("🔥 Gráficas del Dashboard cargadas correctamente");
+                        }
+                     }, 100);
+                }
+
+            })
+
+
+            .catch(() => {
+                contentArea.innerHTML = `
+                    <div style="text-align:center; padding:100px 20px;">
+                        <div style="font-size:48px;">⚠️</div>
+                        <h2>Módulo en desarrollo</h2>
+                        <p>El módulo "<strong>${moduleName}</strong>" aún no está disponible.</p>
+                    </div>`;
+            });
+    }
+
+    navItems.forEach(item => {
+        item.addEventListener("click", e => {
+            e.preventDefault();
+            navItems.forEach(i => i.classList.remove("active"));
+            item.classList.add("active");
+
+            const moduleName = item.getAttribute("data-module");
+            const moduleText = item.querySelector(".nav-item-text")?.textContent || "";
+            moduleTitle.textContent = moduleText;
+
+            loadModule(moduleName);
+        });
+    });
+    </script>
+
+    <!-- ============== CARGAR DASHBOARD AL ENTRAR (CORREGIDO) ============== -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const dashboardBtn = document.querySelector('[data-module="dashboard"]');
+    if (dashboardBtn) dashboardBtn.click();
+
+    // Esperar hasta que el dashboard HTML realmente esté cargado
+    const waitDash = setInterval(() => {
+        const canvas = document.getElementById("produccionChart");
+
+        // Cuando el canvas exista, ejecutar dashboard.js
+        if (canvas && typeof initDashboardCharts === "function") {
+            clearInterval(waitDash);
+            reinitializeDashboardFeatures();
+            initDashboardCharts();
+            console.log("🔥 Dashboard inicializado correctamente al entrar.");
+        }
+    }, 100);
+});
+</script>
+
+
+    <!-- ============== NOTIFICACIONES ============== -->
+    <script>
+    document.getElementById('notificationBtn').addEventListener('click', () => {
+        alert('🔔 Sistema de notificaciones — Próximamente');
+    });
+    </script>
+
+<!-- Scripts de módulos -->
+
+    <script src="./js/animals.js"></script>
+    <script src="./js/reproduction.js"></script>
+    <script src="./js/health-complete.js"></script>
+
+    <!-- Script PRINCIPAL -->
+    <script src="./js/main.js"></script>
+
+    <!-- Dashboard SIEMPRE AL FINAL -->
+    <script defer src="./js/dashboard.js"></script>
+
+</body>
+
+
+</html>
+

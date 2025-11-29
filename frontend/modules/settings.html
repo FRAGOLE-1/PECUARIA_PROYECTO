@@ -1,0 +1,1587 @@
+<!-- ============================================
+     MÓDULO: CONFIGURACIÓN DEL SISTEMA
+     Sistema CattleSIS - Gestión Ganadera
+============================================ -->
+
+<style>
+    .settings-container {
+        max-width: 1800px;
+        margin: 0 auto;
+        animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header del módulo */
+    .module-header {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 32px;
+        border-radius: 16px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow-primary);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-left h1 {
+        font-size: 32px;
+        font-weight: 900;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .header-left p {
+        opacity: 0.9;
+        font-size: 15px;
+    }
+
+    /* Tabs */
+    .tabs-container {
+        background: white;
+        border-radius: 16px;
+        padding: 20px 24px 0;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .tabs {
+        display: flex;
+        gap: 8px;
+        border-bottom: 2px solid #F3F4F6;
+        overflow-x: auto;
+    }
+
+    .tab {
+        padding: 12px 24px;
+        border: none;
+        background: none;
+        font-size: 14px;
+        font-weight: 600;
+        color: #6B7280;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .tab:hover {
+        color: var(--color-primary);
+    }
+
+    .tab.active {
+        color: var(--color-primary);
+        border-bottom-color: var(--color-primary);
+    }
+
+    /* Settings Content */
+    .settings-content {
+        background: white;
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        margin-bottom: 24px;
+    }
+
+    .settings-section {
+        margin-bottom: 32px;
+    }
+
+    .settings-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: #1F2937;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #F3F4F6;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .section-description {
+        font-size: 14px;
+        color: #6B7280;
+        margin-bottom: 20px;
+        line-height: 1.6;
+    }
+
+    /* Form Grid */
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #374151;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .form-label .required {
+        color: #EF4444;
+    }
+
+    .form-input {
+        padding: 12px 16px;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #1F2937;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 4px var(--color-primary-very-light);
+    }
+
+    .form-input:disabled {
+        background: #F9FAFB;
+        cursor: not-allowed;
+    }
+
+    .form-select {
+        padding: 12px 16px;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #1F2937;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .form-select:focus {
+        outline: none;
+        border-color: var(--color-primary);
+    }
+
+    /* Profile Avatar */
+    .profile-avatar-section {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        font-weight: 900;
+        color: white;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .avatar-info {
+        flex: 1;
+    }
+
+    .avatar-name {
+        font-size: 24px;
+        font-weight: 900;
+        color: #1F2937;
+        margin-bottom: 6px;
+    }
+
+    .avatar-role {
+        font-size: 14px;
+        color: #6B7280;
+        margin-bottom: 16px;
+    }
+
+    .avatar-buttons {
+        display: flex;
+        gap: 12px;
+    }
+
+    /* Switch Toggle */
+    .switch-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        background: #F9FAFB;
+        border-radius: 10px;
+        margin-bottom: 12px;
+    }
+
+    .switch-info {
+        flex: 1;
+    }
+
+    .switch-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1F2937;
+        margin-bottom: 4px;
+    }
+
+    .switch-description {
+        font-size: 13px;
+        color: #6B7280;
+    }
+
+    .switch {
+        position: relative;
+        width: 52px;
+        height: 28px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .switch-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #E5E7EB;
+        transition: 0.4s;
+        border-radius: 34px;
+    }
+
+    .switch-slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
+    }
+
+    .switch input:checked + .switch-slider {
+        background-color: var(--color-primary);
+    }
+
+    .switch input:checked + .switch-slider:before {
+        transform: translateX(24px);
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-primary);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-primary-hover);
+    }
+
+    .btn-secondary {
+        padding: 12px 24px;
+        border: 2px solid #E5E7EB;
+        background: white;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #6B7280;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-secondary:hover {
+        border-color: #D1D5DB;
+        background: #F9FAFB;
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, var(--color-success) 0%, #059669 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Info Card */
+    .info-card {
+        background: #EFF6FF;
+        border-left: 4px solid #3B82F6;
+        padding: 16px 20px;
+        border-radius: 10px;
+        display: flex;
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    .info-card-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(59, 130, 246, 0.1);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+    .info-card-content {
+        flex: 1;
+    }
+
+    .info-card-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1F2937;
+        margin-bottom: 4px;
+    }
+
+    .info-card-text {
+        font-size: 13px;
+        color: #6B7280;
+        line-height: 1.5;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .stat-box {
+        background: #F9FAFB;
+        padding: 20px;
+        border-radius: 12px;
+        border-left: 4px solid;
+    }
+
+    .stat-box.primary {
+        border-color: var(--color-primary);
+    }
+
+    .stat-box.success {
+        border-color: var(--color-success);
+    }
+
+    .stat-box.warning {
+        border-color: var(--color-warning);
+    }
+
+    .stat-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #6B7280;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+
+    .stat-value {
+        font-size: 24px;
+        font-weight: 900;
+        color: #1F2937;
+    }
+
+    /* Users Table */
+    .users-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .users-table thead {
+        background: #F9FAFB;
+    }
+
+    .users-table th {
+        padding: 12px 16px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 700;
+        color: #6B7280;
+        text-transform: uppercase;
+        border-bottom: 2px solid #E5E7EB;
+    }
+
+    .users-table td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #F3F4F6;
+        font-size: 14px;
+        color: #1F2937;
+    }
+
+    .users-table tbody tr:hover {
+        background: #F9FAFB;
+    }
+
+    .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 900;
+        color: white;
+        margin-right: 12px;
+    }
+
+    /* Badge */
+    .badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .badge.admin {
+        background: var(--color-primary-light);
+        color: var(--color-primary);
+    }
+
+    .badge.user {
+        background: var(--color-success-light);
+        color: var(--color-success);
+    }
+
+    .badge.viewer {
+        background: rgba(107, 114, 128, 0.1);
+        color: #6B7280;
+    }
+
+    .badge.activo {
+        background: var(--color-success-light);
+        color: var(--color-success);
+    }
+
+    .badge.inactivo {
+        background: rgba(239, 68, 68, 0.1);
+        color: #EF4444;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-action {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-edit {
+        background: rgba(245, 158, 11, 0.1);
+        color: #D97706;
+    }
+
+    .btn-edit:hover {
+        background: #F59E0B;
+        color: white;
+    }
+
+    .btn-delete {
+        background: rgba(239, 68, 68, 0.1);
+        color: #DC2626;
+    }
+
+    .btn-delete:hover {
+        background: #EF4444;
+        color: white;
+    }
+
+    /* Modal */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        max-width: 600px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .modal-header {
+        padding: 24px;
+        border-bottom: 2px solid #F3F4F6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: #1F2937;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .btn-close {
+        width: 36px;
+        height: 36px;
+        border: none;
+        background: #F3F4F6;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 20px;
+        color: #6B7280;
+        transition: all 0.2s ease;
+    }
+
+    .btn-close:hover {
+        background: #E5E7EB;
+        color: #1F2937;
+    }
+
+    .modal-body {
+        padding: 24px;
+    }
+
+    .modal-footer {
+        padding: 20px 24px;
+        border-top: 2px solid #F3F4F6;
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    /* Success Message */
+    .success-message {
+        background: var(--color-success-light);
+        color: var(--color-success);
+        padding: 16px 24px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        display: none;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        border-left: 4px solid var(--color-success);
+        animation: slideIn 0.3s ease;
+    }
+
+    .success-message.show {
+        display: flex;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            gap: 16px;
+            text-align: center;
+        }
+
+        .profile-avatar-section {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .avatar-buttons {
+            justify-content: center;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="settings-container">
+    <!-- Header del módulo -->
+    <div class="module-header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1>⚙️ Configuración del Sistema</h1>
+                <p>Personaliza y administra tu sistema de gestión ganadera</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div class="success-message" id="successMessage">
+        <span style="font-size: 24px;">✅</span>
+        <span id="successMessageText">Cambios guardados exitosamente</span>
+    </div>
+
+    <!-- Tabs de navegación -->
+    <div class="tabs-container">
+        <div class="tabs">
+            <button class="tab active" data-tab="perfil">👤 Mi Perfil</button>
+            <button class="tab" data-tab="finca">🏡 Datos de la Finca</button>
+            <button class="tab" data-tab="usuarios">👥 Usuarios</button>
+            <button class="tab" data-tab="notificaciones">🔔 Notificaciones</button>
+            <button class="tab" data-tab="sistema">💻 Sistema</button>
+        </div>
+    </div>
+
+    <!-- TAB: MI PERFIL -->
+    <div id="perfilContent">
+        <div class="settings-content">
+            <!-- Avatar Section -->
+            <div class="profile-avatar-section">
+                <div class="profile-avatar">JD</div>
+                <div class="avatar-info">
+                    <div class="avatar-name">Juan Pérez</div>
+                    <div class="avatar-role">Administrador Principal</div>
+                    <div class="avatar-buttons">
+                        <button class="btn-secondary" onclick="alert('📸 Funcionalidad de cambiar foto en desarrollo')">
+                            <span>📷</span> Cambiar Foto
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información Personal -->
+            <div class="settings-section">
+                <h3 class="section-title">
+                    <span>📋</span> Información Personal
+                </h3>
+                <form id="perfilForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                Nombre Completo <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-input" id="perfilNombre" value="Juan Pérez" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Email <span class="required">*</span>
+                            </label>
+                            <input type="email" class="form-input" id="perfilEmail" value="juan.perez@ganaderia.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Teléfono</label>
+                            <input type="tel" class="form-input" id="perfilTelefono" value="+591 12345678">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Cargo</label>
+                            <input type="text" class="form-input" id="perfilCargo" value="Administrador" disabled>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 24px;">
+                        <button type="button" class="btn-primary" onclick="saveProfile()">
+                            <span>💾</span> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Cambiar Contraseña -->
+            <div class="settings-section">
+                <h3 class="section-title">
+                    <span>🔐</span> Seguridad
+                </h3>
+                <div class="section-description">
+                    Actualiza tu contraseña regularmente para mantener tu cuenta segura
+                </div>
+
+                <form id="passwordForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Contraseña Actual</label>
+                            <input type="password" class="form-input" id="passwordActual" placeholder="••••••••">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Nueva Contraseña</label>
+                            <input type="password" class="form-input" id="passwordNueva" placeholder="••••••••">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Confirmar Contraseña</label>
+                            <input type="password" class="form-input" id="passwordConfirmar" placeholder="••••••••">
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 24px;">
+                        <button type="button" class="btn-primary" onclick="changePassword()">
+                            <span>🔒</span> Cambiar Contraseña
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: DATOS DE LA FINCA -->
+    <div id="fincaContent" style="display: none;">
+        <div class="settings-content">
+            <!-- Información de la Finca -->
+            <div class="settings-section">
+                <h3 class="section-title">
+                    <span>🏡</span> Información de la Finca
+                </h3>
+                <form id="fincaForm">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                Nombre de la Finca <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-input" id="fincaNombre" value="Hacienda El Paraíso" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Propietario</label>
+                            <input type="text" class="form-input" id="fincaPropietario" value="Juan Pérez">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">NIT/RUC</label>
+                            <input type="text" class="form-input" id="fincaNIT" value="1234567890">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Teléfono</label>
+                            <input type="tel" class="form-input" id="fincaTelefono" value="+591 12345678">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" id="fincaEmail" value="contacto@elparaiso.com">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Dirección</label>
+                            <input type="text" class="form-input" id="fincaDireccion" value="Carretera Norte Km 15, Santa Cruz">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Área Total (hectáreas)</label>
+                            <input type="number" class="form-input" id="fincaArea" value="250" step="0.01">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Tipo de Producción</label>
+                            <select class="form-select" id="fincaTipo">
+                                <option value="Lechera">Lechera</option>
+                                <option value="Carne">Carne</option>
+                                <option value="Doble Propósito" selected>Doble Propósito</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 24px;">
+                        <button type="button" class="btn-primary" onclick="saveFinca()">
+                            <span>💾</span> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="settings-section">
+                <h3 class="section-title">
+                    <span>📊</span> Estadísticas de la Finca
+                </h3>
+                <div class="stats-grid">
+                    <div class="stat-box primary">
+                        <div class="stat-label">Total Animales</div>
+                        <div class="stat-value">234</div>
+                    </div>
+
+                    <div class="stat-box success">
+                        <div class="stat-label">Potreros</div>
+                        <div class="stat-value">8</div>
+                    </div>
+
+                    <div class="stat-box warning">
+                        <div class="stat-label">Empleados</div>
+                        <div class="stat-value">12</div>
+                    </div>
+
+                    <div class="stat-box primary">
+                        <div class="stat-label">Años Operando</div>
+                        <div class="stat-value">15</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: USUARIOS -->
+    <div id="usuariosContent" style="display: none;">
+        <div class="settings-content">
+            <div class="settings-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div>
+                        <h3 class="section-title" style="margin-bottom: 0;">
+                            <span>👥</span> Gestión de Usuarios
+                        </h3>
+                    </div>
+                    <button class="btn-primary" onclick="openUserModal()">
+                        <span>➕</span> Agregar Usuario
+                    </button>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-card-icon">ℹ️</div>
+                    <div class="info-card-content">
+                        <div class="info-card-title">Roles del Sistema</div>
+                        <div class="info-card-text">
+                            <strong>Admin:</strong> Acceso total al sistema. 
+                            <strong>Usuario:</strong> Puede ver y editar registros. 
+                            <strong>Visor:</strong> Solo lectura.
+                        </div>
+                    </div>
+                </div>
+
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th>Último Acceso</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Los usuarios se cargan con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: NOTIFICACIONES -->
+    <div id="notificacionesContent" style="display: none;">
+        <div class="settings-content">
+            <div class="settings-section">
+                <h3 class="section-title">
+                    <span>🔔</span> Preferencias de Notificaciones
+                </h3>
+                <div class="section-description">
+                    Configura qué notificaciones deseas recibir y cómo prefieres recibirlas
+                </div>
+
+                <!-- Notificaciones por Email -->
+                <div style="margin-bottom: 32px;">
+                    <h4 style="font-size: 16px; font-weight: 700; color: #1F2937; margin-bottom: 16px;">
+                        📧 Notificaciones por Email
+                    </h4>
+
+                    <div class="switch-group">
+                        <div class="switch-info">
+                            <div class="switch-label">Alertas de Sanidad</div>
+                            <div class="switch-description">Vacunaciones, tratamientos y chequeos pendientes</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="switch-group">
+                        <div class="switch-info">
+                            <div class="switch-label">Alertas de Producción</div>
+                            <div class="switch-description">Cambios significativos en la producción lechera</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="switch-group">
+                        <div class="switch-info">
+                            <div class="switch-label">Alertas Financieras</div>
+                            <div class="switch-description">Pagos vencidos y facturas pendientes</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="switch-group">
+                        <div class="switch-info">
+                            <div class="switch-label">Alertas de Inventario</div>
+                            <div class="switch-description">Stock bajo de alimentos y medicamentos</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="switch-group">
+                        <div class="switch-info">
+                            <div class="switch-label">Reportes Semanales</div>
+                            <div class="switch-description">Resumen semanal de actividades y métricas</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Notificaciones del Sistema -->
+                <div style="margin-bottom: 32px;">
+                    <h4 style="font-size: 16px; font-weight: 700; color: #1F2937; margin-bottom: 16px;">
+                        🔔 Notificaciones del Sistema
+                    </h4>
+
+                    <div class="switch-group">
+                        <div class="switch-info">
+                            <div class="switch-label">Notificaciones Push</div>
+                            <div class="switch-description">Alertas en tiempo real en el navegador</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="switch-group">
+                        <div class="switch-info">
+                            <div class="switch-label">Sonido de Alertas</div>
+                            <div class="switch-description">Reproducir sonido al recibir notificaciones</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div style="margin-top: 24px;">
+                    <button class="btn-primary" onclick="saveNotifications()">
+                        <span>💾</span> Guardar Preferencias
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: SISTEMA -->
+    <div id="sistemaContent" style="display: none;">
+        <div class="settings-content">
+            <!-- Información del Sistema -->
+            <div class="settings-section">
+                <h3 class="section-title">
+                    <span>💻</span> Información del Sistema
+                </h3>
+                <div class="stats-grid">
+                    <div class="stat-box primary">
+                        <div class="stat-label">Versión</div>
+                        <div class="stat-value" style="font-size: 20px;">v1.0.0</div>
+                    </div>
+
+                    <div class="stat-box success">
+                        <div class="stat-label">Estado</div>
+                        <div class="stat-value" style="font-size: 18px; color: var(--color-success);">Operativo</div>
+                    </div>
+
+                    <div class="stat-box warning">
+                        <div class="stat-label">Base de Datos</div>
+                        <div class="stat-value" style="font-size: 18px;">152 MB</div>
+                    </div>
+
+                    <div class="stat-box primary">
+                        <div class="stat-label">Última Actualización</div>
+                        <div class="stat-value" style="font-size: 16px;">17/10/2025</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preferencias Generales -->
+            <div class="settings-section">
+                <h3 class="section-title">
+                    <span>⚙️</span> Preferencias Generales
+                </h3>
+
+                <div class="switch-group">
+                    <div class="switch-info">
+                        <div class="switch-label">Modo Oscuro</div>
+                        <div class="switch-description">Activar tema oscuro para la interfaz</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+
+                <div class="switch-group">
+                    <div class="switch-info">
+                        <div class="switch-label">Inicio Automático del Dashboard</div>
+                        <div class="switch-description">Mostrar dashboard al iniciar sesión</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <label class="form-label">Idioma del Sistema</label>
+                    <select class="form-select" style="max-width: 300px;">
+                        <option value="es" selected>Español</option>
+                        <option value="en">English</option>
+                        <option value="pt">Português</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <label class="form-label">Zona Horaria</label>
+                    <select class="form-select" style="max-width: 300px;">
+                        <option value="America/La_Paz" selected>La Paz (BOT - UTC-4)</option>
+                        <option value="America/Lima">Lima (PET - UTC-5)</option>
+                        <option value="America/Buenos_Aires">Buenos Aires (ART - UTC-3)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Backup y Restauración -->
+            <div class="settings-section">
+                <h3 class="section-title">
+                    <span>💾</span> Backup y Restauración
+                </h3>
+                <div class="section-description">
+                    Realiza copias de seguridad periódicas para proteger tus datos
+                </div>
+
+                <div class="info-card">
+                    <div class="info-card-icon">ℹ️</div>
+                    <div class="info-card-content">
+                        <div class="info-card-title">Último Backup</div>
+                        <div class="info-card-text">
+                            Realizado el 15/10/2025 a las 23:00 - Tamaño: 152 MB
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button class="btn-success" onclick="createBackup()">
+                        <span>💾</span> Crear Backup Ahora
+                    </button>
+                    <button class="btn-secondary" onclick="restoreBackup()">
+                        <span>📥</span> Restaurar Backup
+                    </button>
+                </div>
+            </div>
+
+            <!-- Zona de Peligro -->
+            <div class="settings-section">
+                <h3 class="section-title" style="color: #EF4444;">
+                    <span>⚠️</span> Zona de Peligro
+                </h3>
+                <div class="section-description" style="color: #EF4444;">
+                    Las siguientes acciones son irreversibles. Procede con precaución.
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button class="btn-danger" onclick="clearCache()">
+                        <span>🗑️</span> Limpiar Caché
+                    </button>
+                    <button class="btn-danger" onclick="resetSystem()">
+                        <span>🔄</span> Restablecer Sistema
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Agregar/Editar Usuario -->
+<div class="modal-overlay" id="modalUser">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalUserTitle">
+                <span>👤</span> Agregar Usuario
+            </h2>
+            <button class="btn-close" onclick="closeUserModal()">✖</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="userForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Nombre Completo <span class="required">*</span>
+                        </label>
+                        <input type="text" class="form-input" id="userName" placeholder="Ej: María González" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Email <span class="required">*</span>
+                        </label>
+                        <input type="email" class="form-input" id="userEmail" placeholder="maria@ejemplo.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Contraseña <span class="required">*</span>
+                        </label>
+                        <input type="password" class="form-input" id="userPassword" placeholder="••••••••" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Rol <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="userRole" required>
+                            <option value="">Seleccionar rol</option>
+                            <option value="Admin">Administrador</option>
+                            <option value="User">Usuario</option>
+                            <option value="Viewer">Visor</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Estado <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="userStatus" required>
+                            <option value="Activo" selected>Activo</option>
+                            <option value="Inactivo">Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeUserModal()">Cancelar</button>
+            <button class="btn-primary" onclick="saveUser()">💾 Guardar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================
+// DATOS DE EJEMPLO
+// ============================================
+let usersData = [
+    { id: 'U001', nombre: 'Juan Pérez', email: 'juan.perez@ganaderia.com', rol: 'Admin', estado: 'Activo', ultimoAcceso: '17/10/2025 10:30' },
+    { id: 'U002', nombre: 'María González', email: 'maria.gonzalez@ganaderia.com', rol: 'User', estado: 'Activo', ultimoAcceso: '17/10/2025 09:15' },
+    { id: 'U003', nombre: 'Carlos López', email: 'carlos.lopez@ganaderia.com', rol: 'User', estado: 'Activo', ultimoAcceso: '16/10/2025 18:45' },
+    { id: 'U004', nombre: 'Ana Martínez', email: 'ana.martinez@ganaderia.com', rol: 'Viewer', estado: 'Activo', ultimoAcceso: '15/10/2025 14:20' },
+];
+
+let currentUserId = null;
+
+// ============================================
+// TABS
+// ============================================
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        const tabName = this.dataset.tab;
+        
+        document.getElementById('perfilContent').style.display = 'none';
+        document.getElementById('fincaContent').style.display = 'none';
+        document.getElementById('usuariosContent').style.display = 'none';
+        document.getElementById('notificacionesContent').style.display = 'none';
+        document.getElementById('sistemaContent').style.display = 'none';
+        
+        if (tabName === 'perfil') {
+            document.getElementById('perfilContent').style.display = 'block';
+        } else if (tabName === 'finca') {
+            document.getElementById('fincaContent').style.display = 'block';
+        } else if (tabName === 'usuarios') {
+            document.getElementById('usuariosContent').style.display = 'block';
+            renderUsers();
+        } else if (tabName === 'notificaciones') {
+            document.getElementById('notificacionesContent').style.display = 'block';
+        } else if (tabName === 'sistema') {
+            document.getElementById('sistemaContent').style.display = 'block';
+        }
+    });
+});
+
+// ============================================
+// RENDERIZAR USUARIOS
+// ============================================
+function renderUsers() {
+    const tbody = document.getElementById('usersTableBody');
+    
+    if (usersData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#6B7280; padding:40px;">No hay usuarios registrados</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = usersData.map(user => {
+        const initials = user.nombre.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        return `
+            <tr>
+                <td>
+                    <div style="display: flex; align-items: center;">
+                        <div class="user-avatar">${initials}</div>
+                        <strong>${user.nombre}</strong>
+                    </div>
+                </td>
+                <td>${user.email}</td>
+                <td><span class="badge ${user.rol.toLowerCase()}">${user.rol}</span></td>
+                <td><span class="badge ${user.estado.toLowerCase()}">${user.estado}</span></td>
+                <td>${user.ultimoAcceso}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-action btn-edit" onclick="editUser('${user.id}')" title="Editar">✏️</button>
+                        <button class="btn-action btn-delete" onclick="deleteUser('${user.id}')" title="Eliminar">🗑️</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// ============================================
+// MODAL USUARIO
+// ============================================
+function openUserModal() {
+    document.getElementById('modalUser').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeUserModal() {
+    document.getElementById('modalUser').classList.remove('active');
+    document.body.style.overflow = 'auto';
+    document.getElementById('userForm').reset();
+    currentUserId = null;
+}
+
+// ============================================
+// GUARDAR FUNCIONES
+// ============================================
+function saveProfile() {
+    const nombre = document.getElementById('perfilNombre').value;
+    const email = document.getElementById('perfilEmail').value;
+    const telefono = document.getElementById('perfilTelefono').value;
+
+    if (!nombre || !email) {
+        alert('⚠️ Por favor completa los campos requeridos');
+        return;
+    }
+
+    showSuccessMessage('✅ Perfil actualizado correctamente');
+}
+
+function changePassword() {
+    const actual = document.getElementById('passwordActual').value;
+    const nueva = document.getElementById('passwordNueva').value;
+    const confirmar = document.getElementById('passwordConfirmar').value;
+
+    if (!actual || !nueva || !confirmar) {
+        alert('⚠️ Por favor completa todos los campos');
+        return;
+    }
+
+    if (nueva !== confirmar) {
+        alert('⚠️ Las contraseñas no coinciden');
+        return;
+    }
+
+    if (nueva.length < 6) {
+        alert('⚠️ La contraseña debe tener al menos 6 caracteres');
+        return;
+    }
+
+    document.getElementById('passwordForm').reset();
+    showSuccessMessage('✅ Contraseña actualizada correctamente');
+}
+
+function saveFinca() {
+    const nombre = document.getElementById('fincaNombre').value;
+
+    if (!nombre) {
+        alert('⚠️ Por favor completa el nombre de la finca');
+        return;
+    }
+
+    showSuccessMessage('✅ Datos de la finca actualizados correctamente');
+}
+
+function saveUser() {
+    const nombre = document.getElementById('userName').value;
+    const email = document.getElementById('userEmail').value;
+    const password = document.getElementById('userPassword').value;
+    const rol = document.getElementById('userRole').value;
+    const estado = document.getElementById('userStatus').value;
+
+    if (!nombre || !email || !password || !rol || !estado) {
+        alert('⚠️ Por favor completa todos los campos requeridos');
+        return;
+    }
+
+    const userItem = {
+        nombre,
+        email,
+        rol,
+        estado,
+        ultimoAcceso: 'Nunca'
+    };
+
+    if (currentUserId) {
+        const index = usersData.findIndex(u => u.id === currentUserId);
+        usersData[index] = { ...usersData[index], ...userItem };
+        showSuccessMessage('✅ Usuario actualizado correctamente');
+    } else {
+        const newId = 'U' + String(usersData.length + 1).padStart(3, '0');
+        usersData.push({ id: newId, ...userItem });
+        showSuccessMessage('✅ Usuario agregado correctamente');
+    }
+
+    closeUserModal();
+    renderUsers();
+}
+
+function editUser(id) {
+    const user = usersData.find(u => u.id === id);
+    if (!user) return;
+
+    document.getElementById('modalUserTitle').innerHTML = '<span>✏️</span> Editar Usuario';
+    document.getElementById('userName').value = user.nombre;
+    document.getElementById('userEmail').value = user.email;
+    document.getElementById('userPassword').value = '••••••••';
+    document.getElementById('userRole').value = user.rol;
+    document.getElementById('userStatus').value = user.estado;
+
+    currentUserId = id;
+    openUserModal();
+}
+
+function deleteUser(id) {
+    const user = usersData.find(u => u.id === id);
+    if (!user) return;
+
+    if (confirm(`¿Estás seguro de eliminar al usuario "${user.nombre}"?`)) {
+        usersData = usersData.filter(u => u.id !== id);
+        renderUsers();
+        showSuccessMessage('✅ Usuario eliminado correctamente');
+    }
+}
+
+function saveNotifications() {
+    showSuccessMessage('✅ Preferencias de notificaciones guardadas');
+}
+
+function createBackup() {
+    showSuccessMessage('💾 Creando backup de la base de datos...');
+    
+    setTimeout(() => {
+        alert('✅ Backup creado exitosamente\n\nArchivo: backup_17_10_2025.sql\nTamaño: 152 MB');
+    }, 1500);
+}
+
+function restoreBackup() {
+    if (confirm('⚠️ ¿Estás seguro de restaurar un backup?\n\nEsta acción sobrescribirá los datos actuales.')) {
+        showSuccessMessage('📥 Restaurando backup...');
+        
+        setTimeout(() => {
+            alert('✅ Backup restaurado exitosamente');
+        }, 2000);
+    }
+}
+
+function clearCache() {
+    if (confirm('¿Estás seguro de limpiar la caché del sistema?')) {
+        showSuccessMessage('🗑️ Limpiando caché...');
+        
+        setTimeout(() => {
+            alert('✅ Caché eliminada correctamente');
+        }, 1000);
+    }
+}
+
+function resetSystem() {
+    if (confirm('⚠️ ADVERTENCIA: Esta acción eliminará TODOS los datos del sistema.\n\n¿Estás completamente seguro?')) {
+        if (confirm('⚠️ ÚLTIMA ADVERTENCIA: No hay vuelta atrás.\n\n¿Continuar con el restablecimiento?')) {
+            alert('❌ Acción cancelada por seguridad.\n\nPara restablecer el sistema, contacta con el administrador.');
+        }
+    }
+}
+
+// ============================================
+// MOSTRAR MENSAJE DE ÉXITO
+// ============================================
+function showSuccessMessage(message) {
+    const successMsg = document.getElementById('successMessage');
+    const successText = document.getElementById('successMessageText');
+    
+    successText.textContent = message;
+    successMsg.classList.add('show');
+    
+    setTimeout(() => {
+        successMsg.classList.remove('show');
+    }, 3000);
+}
+
+// ============================================
+// CERRAR MODALES AL HACER CLICK FUERA
+// ============================================
+document.querySelectorAll('.modal-overlay').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    });
+});
+
+// ============================================
+// INICIALIZAR
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Inicialización si es necesaria
+});
+</script>

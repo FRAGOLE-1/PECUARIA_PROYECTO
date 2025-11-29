@@ -1,0 +1,2287 @@
+<!-- ============================================
+     MÓDULO: SANIDAD Y SALUD ANIMAL
+     Sistema CattleSIS - Gestión Ganadera
+============================================ -->
+
+<style>
+    .health-container {
+        max-width: 1800px;
+        margin: 0 auto;
+        animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header del módulo */
+    .module-header {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 32px;
+        border-radius: 16px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow-primary);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-left h1 {
+        font-size: 32px;
+        font-weight: 900;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .header-left p {
+        opacity: 0.9;
+        font-size: 15px;
+    }
+
+    .header-stats {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
+        margin-top: 24px;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 36px;
+        font-weight: 900;
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        font-size: 13px;
+        opacity: 0.9;
+    }
+
+    /* Tabs */
+    .tabs-container {
+        background: white;
+        border-radius: 16px;
+        padding: 20px 24px 0;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .tabs {
+        display: flex;
+        gap: 8px;
+        border-bottom: 2px solid #F3F4F6;
+        overflow-x: auto;
+    }
+
+    .tab {
+        padding: 12px 24px;
+        border: none;
+        background: none;
+        font-size: 14px;
+        font-weight: 600;
+        color: #6B7280;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .tab:hover {
+        color: var(--color-primary);
+    }
+
+    .tab.active {
+        color: var(--color-primary);
+        border-bottom-color: var(--color-primary);
+    }
+
+    /* Toolbar */
+    .toolbar {
+        background: white;
+        padding: 24px;
+        border-radius: 16px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .toolbar-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .search-box {
+        flex: 1;
+        max-width: 400px;
+        position: relative;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 12px 16px 12px 44px;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .search-box input:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 4px var(--color-primary-very-light);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        color: #9CA3AF;
+    }
+
+    .btn-primary {
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-primary);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-primary-hover);
+    }
+
+    .filters {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #6B7280;
+        margin-bottom: 6px;
+        display: block;
+        text-transform: uppercase;
+    }
+
+    .filter-select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 2px solid #E5E7EB;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #1F2937;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: white;
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--color-primary);
+    }
+
+    /* Alertas sanitarias */
+    .alert-section {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        margin-bottom: 24px;
+    }
+
+    .alert-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid #F3F4F6;
+    }
+
+    .alert-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: #1F2937;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .alert-item {
+        display: flex;
+        gap: 14px;
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        border-left: 4px solid;
+        transition: all 0.2s ease;
+    }
+
+    .alert-item:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .alert-item.urgente {
+        background: #FEF2F2;
+        border-color: #EF4444;
+    }
+
+    .alert-item.advertencia {
+        background: #FFFBEB;
+        border-color: #F59E0B;
+    }
+
+    .alert-item.info {
+        background: #EFF6FF;
+        border-color: #3B82F6;
+    }
+
+    .alert-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .alert-content {
+        flex: 1;
+    }
+
+    .alert-content-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1F2937;
+        margin-bottom: 4px;
+    }
+
+    .alert-desc {
+        font-size: 13px;
+        color: #6B7280;
+        line-height: 1.5;
+    }
+
+    /* Tabla */
+    .table-container {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        margin-bottom: 24px;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table thead {
+        background: #F9FAFB;
+    }
+
+    .data-table th {
+        padding: 16px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 700;
+        color: #6B7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #E5E7EB;
+    }
+
+    .data-table td {
+        padding: 16px;
+        border-bottom: 1px solid #F3F4F6;
+        font-size: 14px;
+        color: #1F2937;
+    }
+
+    .data-table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .data-table tbody tr:hover {
+        background: #F9FAFB;
+    }
+
+    /* Badges */
+    .badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .badge.aplicada {
+        background: var(--color-success-light);
+        color: var(--color-success);
+    }
+
+    .badge.pendiente {
+        background: var(--color-warning-light);
+        color: var(--color-warning);
+    }
+
+    .badge.vencida {
+        background: rgba(239, 68, 68, 0.1);
+        color: #EF4444;
+    }
+
+    .badge.activo {
+        background: var(--color-success-light);
+        color: var(--color-success);
+    }
+
+    .badge.curado {
+        background: var(--color-info-light);
+        color: var(--color-info);
+    }
+
+    .badge.tratamiento {
+        background: var(--color-warning-light);
+        color: var(--color-warning);
+    }
+
+    .badge.critico {
+        background: rgba(239, 68, 68, 0.1);
+        color: #EF4444;
+    }
+
+    /* Botones de acción */
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-action {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-view {
+        background: rgba(59, 130, 246, 0.1);
+        color: #2563EB;
+    }
+
+    .btn-view:hover {
+        background: #2563EB;
+        color: white;
+    }
+
+    .btn-edit {
+        background: rgba(245, 158, 11, 0.1);
+        color: #D97706;
+    }
+
+    .btn-edit:hover {
+        background: #F59E0B;
+        color: white;
+    }
+
+    .btn-delete {
+        background: rgba(239, 68, 68, 0.1);
+        color: #DC2626;
+    }
+
+    .btn-delete:hover {
+        background: #EF4444;
+        color: white;
+    }
+
+    /* Cards */
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .health-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .health-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .health-card.vacuna {
+        border-color: var(--color-primary);
+    }
+
+    .health-card.tratamiento {
+        border-color: #F59E0B;
+    }
+
+    .health-card.enfermedad {
+        border-color: #EF4444;
+    }
+
+    .health-card.examen {
+        border-color: #8B5CF6;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+    }
+
+    .card-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: #1F2937;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .card-date {
+        font-size: 13px;
+        font-weight: 700;
+        color: #6B7280;
+        background: #F9FAFB;
+        padding: 6px 12px;
+        border-radius: 6px;
+    }
+
+    .card-body {
+        margin-bottom: 16px;
+    }
+
+    .card-info {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-top: 12px;
+    }
+
+    .card-info-item {
+        font-size: 13px;
+        color: #6B7280;
+    }
+
+    .card-info-item strong {
+        color: #1F2937;
+        font-weight: 700;
+    }
+
+    .card-footer {
+        display: flex;
+        gap: 8px;
+        padding-top: 16px;
+        border-top: 2px solid #F3F4F6;
+    }
+
+    /* Modal */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        max-width: 800px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .modal-header {
+        padding: 24px;
+        border-bottom: 2px solid #F3F4F6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-size: 24px;
+        font-weight: 800;
+        color: #1F2937;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .btn-close {
+        width: 36px;
+        height: 36px;
+        border: none;
+        background: #F3F4F6;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 20px;
+        color: #6B7280;
+        transition: all 0.2s ease;
+    }
+
+    .btn-close:hover {
+        background: #E5E7EB;
+        color: #1F2937;
+    }
+
+    .modal-body {
+        padding: 24px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #374151;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .form-label .required {
+        color: #EF4444;
+    }
+
+    .form-input {
+        padding: 12px 16px;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #1F2937;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 4px var(--color-primary-very-light);
+    }
+
+    .form-select {
+        padding: 12px 16px;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #1F2937;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .form-select:focus {
+        outline: none;
+        border-color: var(--color-primary);
+    }
+
+    .modal-footer {
+        padding: 20px 24px;
+        border-top: 2px solid #F3F4F6;
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    .btn-secondary {
+        padding: 12px 24px;
+        border: 2px solid #E5E7EB;
+        background: white;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #6B7280;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+        border-color: #D1D5DB;
+        background: #F9FAFB;
+    }
+
+    .btn-save {
+        padding: 12px 32px;
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-primary);
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-primary-hover);
+    }
+
+    /* Detalles */
+    .detail-section {
+        margin-bottom: 24px;
+    }
+
+    .detail-section-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1F2937;
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #F3F4F6;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .detail-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #6B7280;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+    }
+
+    .detail-value {
+        font-size: 15px;
+        font-weight: 600;
+        color: #1F2937;
+    }
+
+    /* Timeline */
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 10px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #E5E7EB;
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+        padding-left: 20px;
+    }
+
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -24px;
+        top: 6px;
+        width: 12px;
+        height: 12px;
+        background: var(--color-primary);
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 0 0 2px var(--color-primary);
+    }
+
+    .timeline-date {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--color-primary);
+        margin-bottom: 4px;
+    }
+
+    .timeline-content {
+        font-size: 14px;
+        color: #1F2937;
+        font-weight: 600;
+    }
+
+    .timeline-description {
+        font-size: 13px;
+        color: #6B7280;
+        margin-top: 4px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1400px) {
+        .header-stats {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .header-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .cards-grid {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            gap: 16px;
+            text-align: center;
+        }
+
+        .toolbar-top {
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .search-box {
+            max-width: 100%;
+        }
+
+        .filters {
+            flex-direction: column;
+        }
+
+        .cards-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="health-container">
+    <!-- Header del módulo -->
+    <div class="module-header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1>💉 Sanidad y Salud Animal</h1>
+                <p>Monitorea la salud del hato y mantén un control sanitario óptimo</p>
+            </div>
+        </div>
+        
+        <div class="header-stats">
+            <div class="stat-card">
+                <div class="stat-value">234</div>
+                <div class="stat-label">Total Animales</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">94%</div>
+                <div class="stat-label">Salud del Hato</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Vacunaciones Próximas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Animales en Tratamiento</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">5</div>
+                <div class="stat-label">Alertas Activas</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alertas Sanitarias Urgentes -->
+    <div class="alert-section">
+        <div class="alert-header">
+            <div class="alert-title">🚨 Alertas Sanitarias</div>
+        </div>
+
+        <div class="alert-item urgente">
+            <div class="alert-icon" style="background: #FEE2E2; color: #EF4444;">💉</div>
+            <div class="alert-content">
+                <div class="alert-content-title">Vacuna Antiaftosa Vencida</div>
+                <div class="alert-desc">12 animales requieren vacunación inmediata - Última dosis hace 6 meses</div>
+            </div>
+        </div>
+
+        <div class="alert-item advertencia">
+            <div class="alert-icon" style="background: #FEF3C7; color: #F59E0B;">🤒</div>
+            <div class="alert-content">
+                <div class="alert-content-title">Animal en Tratamiento</div>
+                <div class="alert-desc">COW-003 (Estrella) - Mastitis en tratamiento, día 3 de 7</div>
+            </div>
+        </div>
+
+        <div class="alert-item info">
+            <div class="alert-icon" style="background: #DBEAFE; color: #3B82F6;">📅</div>
+            <div class="alert-content">
+                <div class="alert-content-title">Desparasitación Programada</div>
+                <div class="alert-desc">Próxima semana - 45 animales del sector norte</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs de navegación -->
+    <div class="tabs-container">
+        <div class="tabs">
+            <button class="tab active" data-tab="vacunas">💉 Vacunaciones</button>
+            <button class="tab" data-tab="tratamientos">💊 Tratamientos</button>
+            <button class="tab" data-tab="enfermedades">🤒 Enfermedades</button>
+            <button class="tab" data-tab="examenes">🔬 Exámenes</button>
+            <button class="tab" data-tab="historial">📋 Historial Clínico</button>
+        </div>
+    </div>
+
+    <!-- TAB: VACUNACIONES -->
+    <div id="vacunasContent">
+        <div class="toolbar">
+            <div class="toolbar-top">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchVacunas" placeholder="Buscar animal...">
+                </div>
+                <button class="btn-primary" id="btnAddVacuna">
+                    <span>➕</span> Registrar Vacunación
+                </button>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Tipo de Vacuna</label>
+                    <select class="filter-select" id="filterTipoVacuna">
+                        <option value="">Todas</option>
+                        <option value="Antiaftosa">Antiaftosa</option>
+                        <option value="Brucelosis">Brucelosis</option>
+                        <option value="Carbunco">Carbunco</option>
+                        <option value="Rabia">Rabia</option>
+                        <option value="Clostridiosis">Clostridiosis</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Estado</label>
+                    <select class="filter-select" id="filterEstadoVacuna">
+                        <option value="">Todos</option>
+                        <option value="Aplicada">Aplicada</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Vencida">Vencida</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Animal</th>
+                            <th>Vacuna</th>
+                            <th>Fecha Aplicación</th>
+                            <th>Próxima Dosis</th>
+                            <th>Lote</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vacunasTableBody">
+                        <!-- Las vacunas se cargan con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: TRATAMIENTOS -->
+    <div id="tratamientosContent" style="display: none;">
+        <div class="toolbar">
+            <div class="toolbar-top">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchTratamientos" placeholder="Buscar tratamiento...">
+                </div>
+                <button class="btn-primary" id="btnAddTratamiento">
+                    <span>➕</span> Registrar Tratamiento
+                </button>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Estado</label>
+                    <select class="filter-select" id="filterEstadoTratamiento">
+                        <option value="">Todos</option>
+                        <option value="Activo">Activo</option>
+                        <option value="Completado">Completado</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="cards-grid" id="tratamientosGrid">
+            <!-- Los tratamientos se cargan con JavaScript -->
+        </div>
+    </div>
+
+    <!-- TAB: ENFERMEDADES -->
+    <div id="enfermedadesContent" style="display: none;">
+        <div class="toolbar">
+            <div class="toolbar-top">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchEnfermedades" placeholder="Buscar enfermedad...">
+                </div>
+                <button class="btn-primary" id="btnAddEnfermedad">
+                    <span>➕</span> Registrar Enfermedad
+                </button>
+            </div>
+        </div>
+
+        <div class="cards-grid" id="enfermedadesGrid">
+            <!-- Las enfermedades se cargan con JavaScript -->
+        </div>
+    </div>
+
+    <!-- TAB: EXÁMENES -->
+    <div id="examenesContent" style="display: none;">
+        <div class="toolbar">
+            <div class="toolbar-top">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchExamenes" placeholder="Buscar examen...">
+                </div>
+                <button class="btn-primary" id="btnAddExamen">
+                    <span>➕</span> Registrar Examen
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Animal</th>
+                            <th>Tipo de Examen</th>
+                            <th>Fecha</th>
+                            <th>Resultado</th>
+                            <th>Veterinario</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="examenesTableBody">
+                        <!-- Los exámenes se cargan con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: HISTORIAL CLÍNICO -->
+    <div id="historialContent" style="display: none;">
+        <div class="toolbar">
+            <div class="toolbar-top">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Buscar por ID de animal...">
+                </div>
+                <button class="btn-primary" onclick="alert('Selecciona un animal para ver su historial completo')">
+                    <span>🐄</span> Ver Historial Completo
+                </button>
+            </div>
+        </div>
+
+        <div style="background: white; border-radius: 16px; padding: 40px; text-align: center; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+            <div style="font-size: 64px; margin-bottom: 16px;">📋</div>
+            <h3 style="font-size: 20px; font-weight: 700; color: #1F2937; margin-bottom: 8px;">Historial Clínico</h3>
+            <p style="color: #6B7280;">Busca un animal para ver su historial médico completo</p>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Registrar Vacunación -->
+<div class="modal-overlay" id="modalVacuna">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalVacunaTitle">
+                <span>💉</span> Registrar Vacunación
+            </h2>
+            <button class="btn-close" onclick="closeVacunaModal()">✖</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="vacunaForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Animal <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="vacunaAnimal" required>
+                            <option value="">Seleccionar animal</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Tipo de Vacuna <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="vacunaTipo" required>
+                            <option value="">Seleccionar vacuna</option>
+                            <option value="Antiaftosa">Antiaftosa</option>
+                            <option value="Brucelosis">Brucelosis (RB51)</option>
+                            <option value="Carbunco">Carbunco Sintomático</option>
+                            <option value="Rabia">Rabia</option>
+                            <option value="Clostridiosis">Clostridiosis</option>
+                            <option value="IBR">IBR (Rinotraqueítis)</option>
+                            <option value="DVB">DVB (Diarrea Viral)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Fecha de Aplicación <span class="required">*</span>
+                        </label>
+                        <input type="date" class="form-input" id="vacunaFecha" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Próxima Dosis
+                        </label>
+                        <input type="date" class="form-input" id="vacunaProxima">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Lote</label>
+                        <input type="text" class="form-input" id="vacunaLote" placeholder="Ej: LOT-2025-001">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Veterinario</label>
+                        <input type="text" class="form-input" id="vacunaVeterinario" placeholder="Nombre del veterinario">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Dosis (ml)</label>
+                        <input type="number" class="form-input" id="vacunaDosis" placeholder="Ej: 2" step="0.1">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Estado</label>
+                        <select class="form-select" id="vacunaEstado">
+                            <option value="Aplicada">Aplicada</option>
+                            <option value="Pendiente">Pendiente</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">Observaciones</label>
+                        <textarea class="form-input" id="vacunaObservaciones" rows="3" placeholder="Reacciones, notas adicionales..."></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeVacunaModal()">Cancelar</button>
+            <button class="btn-save" onclick="saveVacuna()">💾 Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Registrar Tratamiento -->
+<div class="modal-overlay" id="modalTratamiento">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTratamientoTitle">
+                <span>💊</span> Registrar Tratamiento
+            </h2>
+            <button class="btn-close" onclick="closeTratamientoModal()">✖</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="tratamientoForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Animal <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="tratamientoAnimal" required>
+                            <option value="">Seleccionar animal</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Diagnóstico <span class="required">*</span>
+                        </label>
+                        <input type="text" class="form-input" id="tratamientoDiagnostico" placeholder="Ej: Mastitis" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Fecha Inicio <span class="required">*</span>
+                        </label>
+                        <input type="date" class="form-input" id="tratamientoFechaInicio" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Duración (días)
+                        </label>
+                        <input type="number" class="form-input" id="tratamientoDuracion" placeholder="Ej: 7">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Medicamento <span class="required">*</span>
+                        </label>
+                        <input type="text" class="form-input" id="tratamientoMedicamento" placeholder="Ej: Penicilina" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Dosis
+                        </label>
+                        <input type="text" class="form-input" id="tratamientoDosis" placeholder="Ej: 10ml cada 12h">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Veterinario</label>
+                        <input type="text" class="form-input" id="tratamientoVeterinario" placeholder="Nombre del veterinario">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Estado</label>
+                        <select class="form-select" id="tratamientoEstado">
+                            <option value="Activo">Activo</option>
+                            <option value="Completado">Completado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">Observaciones</label>
+                        <textarea class="form-input" id="tratamientoObservaciones" rows="3" placeholder="Evolución, efectos secundarios..."></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeTratamientoModal()">Cancelar</button>
+            <button class="btn-save" onclick="saveTratamiento()">💾 Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Registrar Enfermedad -->
+<div class="modal-overlay" id="modalEnfermedad">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalEnfermedadTitle">
+                <span>🤒</span> Registrar Enfermedad
+            </h2>
+            <button class="btn-close" onclick="closeEnfermedadModal()">✖</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="enfermedadForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Animal <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="enfermedadAnimal" required>
+                            <option value="">Seleccionar animal</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Enfermedad <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="enfermedadTipo" required>
+                            <option value="">Seleccionar enfermedad</option>
+                            <option value="Mastitis">Mastitis</option>
+                            <option value="Neumonía">Neumonía</option>
+                            <option value="Diarrea">Diarrea</option>
+                            <option value="Cojera">Cojera / Renguera</option>
+                            <option value="Parásitos">Parasitosis</option>
+                            <option value="Metritis">Metritis</option>
+                            <option value="Conjuntivitis">Conjuntivitis</option>
+                            <option value="Otra">Otra</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Fecha Detección <span class="required">*</span>
+                        </label>
+                        <input type="date" class="form-input" id="enfermedadFecha" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Gravedad</label>
+                        <select class="form-select" id="enfermedadGravedad">
+                            <option value="Leve">Leve</option>
+                            <option value="Moderada">Moderada</option>
+                            <option value="Grave">Grave</option>
+                            <option value="Crítica">Crítica</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Estado</label>
+                        <select class="form-select" id="enfermedadEstado">
+                            <option value="En Tratamiento">En Tratamiento</option>
+                            <option value="Curado">Curado</option>
+                            <option value="Crónico">Crónico</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Veterinario</label>
+                        <input type="text" class="form-input" id="enfermedadVeterinario" placeholder="Nombre del veterinario">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">Síntomas</label>
+                        <textarea class="form-input" id="enfermedadSintomas" rows="2" placeholder="Describe los síntomas observados..."></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">Observaciones</label>
+                        <textarea class="form-input" id="enfermedadObservaciones" rows="3" placeholder="Tratamiento aplicado, evolución..."></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeEnfermedadModal()">Cancelar</button>
+            <button class="btn-save" onclick="saveEnfermedad()">💾 Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Registrar Examen -->
+<div class="modal-overlay" id="modalExamen">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalExamenTitle">
+                <span>🔬</span> Registrar Examen
+            </h2>
+            <button class="btn-close" onclick="closeExamenModal()">✖</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="examenForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Animal <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="examenAnimal" required>
+                            <option value="">Seleccionar animal</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Tipo de Examen <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="examenTipo" required>
+                            <option value="">Seleccionar examen</option>
+                            <option value="Hemograma">Hemograma</option>
+                            <option value="Brucelosis">Brucelosis</option>
+                            <option value="Tuberculosis">Tuberculosis</option>
+                            <option value="Leucosis">Leucosis</option>
+                            <option value="Parasitológico">Parasitológico</option>
+                            <option value="Coprocultivo">Coprocultivo</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Fecha del Examen <span class="required">*</span>
+                        </label>
+                        <input type="date" class="form-input" id="examenFecha" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Resultado
+                        </label>
+                        <select class="form-select" id="examenResultado">
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Negativo">Negativo</option>
+                            <option value="Positivo">Positivo</option>
+                            <option value="Dudoso">Dudoso</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Laboratorio</label>
+                        <input type="text" class="form-input" id="examenLaboratorio" placeholder="Nombre del laboratorio">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Veterinario</label>
+                        <input type="text" class="form-input" id="examenVeterinario" placeholder="Veterinario solicitante">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">Observaciones</label>
+                        <textarea class="form-input" id="examenObservaciones" rows="3" placeholder="Resultados detallados, recomendaciones..."></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeExamenModal()">Cancelar</button>
+            <button class="btn-save" onclick="saveExamen()">💾 Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Ver Detalles -->
+<div class="modal-overlay" id="modalDetails">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                <span>📋</span> Detalles
+            </h2>
+            <button class="btn-close" onclick="closeDetailsModal()">✖</button>
+        </div>
+
+        <div class="modal-body" id="detailsContent">
+            <!-- Los detalles se cargan con JavaScript -->
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeDetailsModal()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================
+// DATOS DE EJEMPLO
+// ============================================
+
+// Lista de animales para selects
+const animales = [
+    { id: 'COW-001', nombre: 'Mariposa' },
+    { id: 'COW-002', nombre: 'Luna' },
+    { id: 'COW-003', nombre: 'Estrella' },
+    { id: 'COW-005', nombre: 'Paloma' },
+    { id: 'COW-007', nombre: 'Bella' },
+    { id: 'COW-010', nombre: 'Rosa' },
+    { id: 'TERN-004', nombre: 'Torito' },
+    { id: 'TERN-008', nombre: 'Chispita' },
+];
+
+let vacunasData = [
+    { id: 'V001', animalId: 'COW-001', animal: 'Mariposa (COW-001)', tipo: 'Antiaftosa', fecha: '2025-04-15', proxima: '2025-10-15', lote: 'LOT-2025-042', veterinario: 'Dr. García', dosis: 2, estado: 'Vencida', observaciones: '' },
+    { id: 'V002', animalId: 'COW-002', animal: 'Luna (COW-002)', tipo: 'Brucelosis', fecha: '2025-08-20', proxima: '2026-08-20', lote: 'LOT-2025-156', veterinario: 'Dr. García', dosis: 2, estado: 'Aplicada', observaciones: 'Sin reacciones' },
+    { id: 'V003', animalId: 'COW-003', animal: 'Estrella (COW-003)', tipo: 'Antiaftosa', fecha: '2025-09-10', proxima: '2026-03-10', lote: 'LOT-2025-187', veterinario: 'Dr. Martínez', dosis: 2, estado: 'Aplicada', observaciones: '' },
+    { id: 'V004', animalId: 'COW-005', animal: 'Paloma (COW-005)', tipo: 'Carbunco', fecha: '2025-07-05', proxima: '2026-07-05', lote: 'LOT-2025-098', veterinario: 'Dr. García', dosis: 5, estado: 'Aplicada', observaciones: '' },
+];
+
+let tratamientosData = [
+    { id: 'T001', animalId: 'COW-003', animal: 'Estrella (COW-003)', diagnostico: 'Mastitis', fechaInicio: '2025-10-14', duracion: 7, medicamento: 'Penicilina', dosis: '10ml cada 12h', veterinario: 'Dr. García', estado: 'Activo', observaciones: 'Día 3 de tratamiento, mejora notable' },
+    { id: 'T002', animalId: 'TERN-004', animal: 'Torito (TERN-004)', diagnostico: 'Diarrea neonatal', fechaInicio: '2025-10-10', duracion: 5, medicamento: 'Electrolitos + Antibiótico', dosis: '500ml oral 2x/día', veterinario: 'Dr. Martínez', estado: 'Completado', observaciones: 'Recuperado completamente' },
+    { id: 'T003', animalId: 'COW-007', animal: 'Bella (COW-007)', diagnostico: 'Cojera - Pododermatitis', fechaInicio: '2025-10-12', duracion: 10, medicamento: 'Antiinflamatorio + Antibiótico', dosis: '20ml IM cada 24h', veterinario: 'Dr. García', estado: 'Activo', observaciones: 'Tratamiento local + sistémico' },
+];
+
+let enfermedadesData = [
+    { id: 'E001', animalId: 'COW-003', animal: 'Estrella (COW-003)', tipo: 'Mastitis', fecha: '2025-10-14', gravedad: 'Moderada', estado: 'En Tratamiento', veterinario: 'Dr. García', sintomas: 'Inflamación del cuarto posterior derecho, leche con grumos', observaciones: 'Cultivo pendiente, tratamiento empírico iniciado' },
+    { id: 'E002', animalId: 'COW-007', animal: 'Bella (COW-007)', tipo: 'Cojera', fecha: '2025-10-12', gravedad: 'Leve', estado: 'En Tratamiento', veterinario: 'Dr. García', sintomas: 'Cojera en pata posterior izquierda, lesión en pezuña', observaciones: 'Recorte funcional realizado' },
+    { id: 'E003', animalId: 'COW-010', animal: 'Rosa (COW-010)', tipo: 'Parásitos', fecha: '2025-09-20', gravedad: 'Leve', estado: 'Curado', veterinario: 'Dr. Martínez', sintomas: 'Pérdida de peso, pelo áspero', observaciones: 'Desparasitación completada, recuperación total' },
+];
+
+let examenesData = [
+    { id: 'EX001', animalId: 'COW-001', animal: 'Mariposa (COW-001)', tipo: 'Brucelosis', fecha: '2025-09-15', resultado: 'Negativo', laboratorio: 'Lab Central', veterinario: 'Dr. García', observaciones: 'Control anual satisfactorio' },
+    { id: 'EX002', animalId: 'COW-002', animal: 'Luna (COW-002)', tipo: 'Tuberculosis', fecha: '2025-09-18', resultado: 'Negativo', laboratorio: 'Lab Central', veterinario: 'Dr. Martínez', observaciones: '' },
+    { id: 'EX003', animalId: 'COW-003', animal: 'Estrella (COW-003)', tipo: 'Hemograma', fecha: '2025-10-14', resultado: 'Pendiente', laboratorio: 'Lab Veterinario del Este', veterinario: 'Dr. García', observaciones: 'Solicitado por cuadro de mastitis' },
+];
+
+let currentItemId = null;
+let currentItemType = null;
+
+// ============================================
+// TABS
+// ============================================
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        const tabName = this.dataset.tab;
+        
+        // Ocultar todos
+        document.getElementById('vacunasContent').style.display = 'none';
+        document.getElementById('tratamientosContent').style.display = 'none';
+        document.getElementById('enfermedadesContent').style.display = 'none';
+        document.getElementById('examenesContent').style.display = 'none';
+        document.getElementById('historialContent').style.display = 'none';
+        
+        // Mostrar el activo
+        if (tabName === 'vacunas') {
+            document.getElementById('vacunasContent').style.display = 'block';
+            renderVacunas();
+        } else if (tabName === 'tratamientos') {
+            document.getElementById('tratamientosContent').style.display = 'block';
+            renderTratamientos();
+        } else if (tabName === 'enfermedades') {
+            document.getElementById('enfermedadesContent').style.display = 'block';
+            renderEnfermedades();
+        } else if (tabName === 'examenes') {
+            document.getElementById('examenesContent').style.display = 'block';
+            renderExamenes();
+        } else if (tabName === 'historial') {
+            document.getElementById('historialContent').style.display = 'block';
+        }
+    });
+});
+
+// ============================================
+// RENDERIZAR VACUNAS
+// ============================================
+function renderVacunas() {
+    const tbody = document.getElementById('vacunasTableBody');
+    
+    if (vacunasData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#6B7280; padding:40px;">No hay vacunaciones registradas</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = vacunasData.map(vacuna => `
+        <tr>
+            <td><strong>${vacuna.animal}</strong></td>
+            <td>${vacuna.tipo}</td>
+            <td>${new Date(vacuna.fecha).toLocaleDateString('es-ES')}</td>
+            <td>${vacuna.proxima ? new Date(vacuna.proxima).toLocaleDateString('es-ES') : 'N/A'}</td>
+            <td>${vacuna.lote || 'N/A'}</td>
+            <td><span class="badge ${vacuna.estado.toLowerCase()}">${vacuna.estado}</span></td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-action btn-view" onclick="viewDetails('vacuna', '${vacuna.id}')" title="Ver">👁️</button>
+                    <button class="btn-action btn-edit" onclick="editVacuna('${vacuna.id}')" title="Editar">✏️</button>
+                    <button class="btn-action btn-delete" onclick="deleteVacuna('${vacuna.id}')" title="Eliminar">🗑️</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// ============================================
+// RENDERIZAR TRATAMIENTOS
+// ============================================
+function renderTratamientos() {
+    const grid = document.getElementById('tratamientosGrid');
+    
+    if (tratamientosData.length === 0) {
+        grid.innerHTML = '<p style="text-align:center; color:#6B7280; padding:40px; grid-column: 1/-1;">No hay tratamientos registrados</p>';
+        return;
+    }
+    
+    grid.innerHTML = tratamientosData.map(trat => `
+        <div class="health-card tratamiento" onclick="viewDetails('tratamiento', '${trat.id}')">
+            <div class="card-header">
+                <div class="card-title">💊 ${trat.animal}</div>
+                <div class="card-date">${new Date(trat.fechaInicio).toLocaleDateString('es-ES')}</div>
+            </div>
+            <div class="card-body">
+                <h4 style="font-size: 16px; font-weight: 700; color: #1F2937; margin-bottom: 8px;">${trat.diagnostico}</h4>
+                <div class="card-info">
+                    <div class="card-info-item">
+                        <strong>Medicamento:</strong> ${trat.medicamento}
+                    </div>
+                    <div class="card-info-item">
+                        <strong>Duración:</strong> ${trat.duracion} días
+                    </div>
+                    <div class="card-info-item">
+                        <strong>Veterinario:</strong> ${trat.veterinario}
+                    </div>
+                    <div class="card-info-item">
+                        <strong>Estado:</strong> <span class="badge ${trat.estado.toLowerCase()}">${trat.estado}</span>
+                    </div>
+                </div>
+                ${trat.observaciones ? `<p style="margin-top:12px; color:#6B7280; font-size:13px;">${trat.observaciones}</p>` : ''}
+            </div>
+            <div class="card-footer" onclick="event.stopPropagation()">
+                <button class="btn-action btn-edit" onclick="editTratamiento('${trat.id}')" title="Editar">✏️</button>
+                <button class="btn-action btn-delete" onclick="deleteTratamiento('${trat.id}')" title="Eliminar">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ============================================
+// RENDERIZAR ENFERMEDADES
+// ============================================
+function renderEnfermedades() {
+    const grid = document.getElementById('enfermedadesGrid');
+    
+    if (enfermedadesData.length === 0) {
+        grid.innerHTML = '<p style="text-align:center; color:#6B7280; padding:40px; grid-column: 1/-1;">No hay enfermedades registradas</p>';
+        return;
+    }
+    
+    grid.innerHTML = enfermedadesData.map(enf => `
+        <div class="health-card enfermedad" onclick="viewDetails('enfermedad', '${enf.id}')">
+            <div class="card-header">
+                <div class="card-title">🤒 ${enf.animal}</div>
+                <div class="card-date">${new Date(enf.fecha).toLocaleDateString('es-ES')}</div>
+            </div>
+            <div class="card-body">
+                <h4 style="font-size: 16px; font-weight: 700; color: #1F2937; margin-bottom: 8px;">${enf.tipo}</h4>
+                <div class="card-info">
+                    <div class="card-info-item">
+                        <strong>Gravedad:</strong> ${enf.gravedad}
+                    </div>
+                    <div class="card-info-item">
+                        <strong>Estado:</strong> <span class="badge ${enf.estado.toLowerCase().replace(' ', '-')}">${enf.estado}</span>
+                    </div>
+                    <div class="card-info-item" style="grid-column: 1/-1;">
+                        <strong>Veterinario:</strong> ${enf.veterinario}
+                    </div>
+                </div>
+                ${enf.sintomas ? `<p style="margin-top:12px; color:#6B7280; font-size:13px;"><strong>Síntomas:</strong> ${enf.sintomas}</p>` : ''}
+            </div>
+            <div class="card-footer" onclick="event.stopPropagation()">
+                <button class="btn-action btn-edit" onclick="editEnfermedad('${enf.id}')" title="Editar">✏️</button>
+                <button class="btn-action btn-delete" onclick="deleteEnfermedad('${enf.id}')" title="Eliminar">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ============================================
+// RENDERIZAR EXÁMENES
+// ============================================
+function renderExamenes() {
+    const tbody = document.getElementById('examenesTableBody');
+    
+    if (examenesData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#6B7280; padding:40px;">No hay exámenes registrados</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = examenesData.map(exam => `
+        <tr>
+            <td><strong>${exam.animal}</strong></td>
+            <td>${exam.tipo}</td>
+            <td>${new Date(exam.fecha).toLocaleDateString('es-ES')}</td>
+            <td><span class="badge ${exam.resultado.toLowerCase()}">${exam.resultado}</span></td>
+            <td>${exam.veterinario}</td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-action btn-view" onclick="viewDetails('examen', '${exam.id}')" title="Ver">👁️</button>
+                    <button class="btn-action btn-edit" onclick="editExamen('${exam.id}')" title="Editar">✏️</button>
+                    <button class="btn-action btn-delete" onclick="deleteExamen('${exam.id}')" title="Eliminar">🗑️</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// ============================================
+// MODALES
+// ============================================
+function openVacunaModal() {
+    document.getElementById('modalVacuna').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeVacunaModal() {
+    document.getElementById('modalVacuna').classList.remove('active');
+    document.body.style.overflow = 'auto';
+    document.getElementById('vacunaForm').reset();
+    currentItemId = null;
+}
+
+function openTratamientoModal() {
+    document.getElementById('modalTratamiento').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeTratamientoModal() {
+    document.getElementById('modalTratamiento').classList.remove('active');
+    document.body.style.overflow = 'auto';
+    document.getElementById('tratamientoForm').reset();
+    currentItemId = null;
+}
+
+function openEnfermedadModal() {
+    document.getElementById('modalEnfermedad').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeEnfermedadModal() {
+    document.getElementById('modalEnfermedad').classList.remove('active');
+    document.body.style.overflow = 'auto';
+    document.getElementById('enfermedadForm').reset();
+    currentItemId = null;
+}
+
+function openExamenModal() {
+    document.getElementById('modalExamen').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeExamenModal() {
+    document.getElementById('modalExamen').classList.remove('active');
+    document.body.style.overflow = 'auto';
+    document.getElementById('examenForm').reset();
+    currentItemId = null;
+}
+
+function closeDetailsModal() {
+    document.getElementById('modalDetails').classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+// ============================================
+// GUARDAR
+// ============================================
+function saveVacuna() {
+    const animalId = document.getElementById('vacunaAnimal').value;
+    const tipo = document.getElementById('vacunaTipo').value;
+    const fecha = document.getElementById('vacunaFecha').value;
+    const proxima = document.getElementById('vacunaProxima').value;
+    const lote = document.getElementById('vacunaLote').value;
+    const veterinario = document.getElementById('vacunaVeterinario').value;
+    const dosis = document.getElementById('vacunaDosis').value;
+    const estado = document.getElementById('vacunaEstado').value;
+    const observaciones = document.getElementById('vacunaObservaciones').value;
+
+    if (!animalId || !tipo || !fecha) {
+        alert('⚠️ Por favor completa los campos requeridos');
+        return;
+    }
+
+    const animal = animales.find(a => a.id === animalId);
+
+    const vacunaData = {
+        animalId,
+        animal: `${animal.nombre} (${animal.id})`,
+        tipo,
+        fecha,
+        proxima,
+        lote,
+        veterinario,
+        dosis: dosis ? parseFloat(dosis) : null,
+        estado,
+        observaciones
+    };
+
+    if (currentItemId) {
+        const index = vacunasData.findIndex(v => v.id === currentItemId);
+        vacunasData[index] = { ...vacunasData[index], ...vacunaData };
+        alert('✅ Vacuna actualizada correctamente');
+    } else {
+        const newId = 'V' + String(vacunasData.length + 1).padStart(3, '0');
+        vacunasData.push({ id: newId, ...vacunaData });
+        alert('✅ Vacuna registrada correctamente');
+    }
+
+    closeVacunaModal();
+    renderVacunas();
+}
+
+function saveTratamiento() {
+    const animalId = document.getElementById('tratamientoAnimal').value;
+    const diagnostico = document.getElementById('tratamientoDiagnostico').value;
+    const fechaInicio = document.getElementById('tratamientoFechaInicio').value;
+    const duracion = document.getElementById('tratamientoDuracion').value;
+    const medicamento = document.getElementById('tratamientoMedicamento').value;
+    const dosis = document.getElementById('tratamientoDosis').value;
+    const veterinario = document.getElementById('tratamientoVeterinario').value;
+    const estado = document.getElementById('tratamientoEstado').value;
+    const observaciones = document.getElementById('tratamientoObservaciones').value;
+
+    if (!animalId || !diagnostico || !fechaInicio || !medicamento) {
+        alert('⚠️ Por favor completa los campos requeridos');
+        return;
+    }
+
+    const animal = animales.find(a => a.id === animalId);
+
+    const tratamientoData = {
+        animalId,
+        animal: `${animal.nombre} (${animal.id})`,
+        diagnostico,
+        fechaInicio,
+        duracion: duracion ? parseInt(duracion) : null,
+        medicamento,
+        dosis,
+        veterinario,
+        estado,
+        observaciones
+    };
+
+    if (currentItemId) {
+        const index = tratamientosData.findIndex(t => t.id === currentItemId);
+        tratamientosData[index] = { ...tratamientosData[index], ...tratamientoData };
+        alert('✅ Tratamiento actualizado correctamente');
+    } else {
+        const newId = 'T' + String(tratamientosData.length + 1).padStart(3, '0');
+        tratamientosData.push({ id: newId, ...tratamientoData });
+        alert('✅ Tratamiento registrado correctamente');
+    }
+
+    closeTratamientoModal();
+    renderTratamientos();
+}
+
+function saveEnfermedad() {
+    const animalId = document.getElementById('enfermedadAnimal').value;
+    const tipo = document.getElementById('enfermedadTipo').value;
+    const fecha = document.getElementById('enfermedadFecha').value;
+    const gravedad = document.getElementById('enfermedadGravedad').value;
+    const estado = document.getElementById('enfermedadEstado').value;
+    const veterinario = document.getElementById('enfermedadVeterinario').value;
+    const sintomas = document.getElementById('enfermedadSintomas').value;
+    const observaciones = document.getElementById('enfermedadObservaciones').value;
+
+    if (!animalId || !tipo || !fecha) {
+        alert('⚠️ Por favor completa los campos requeridos');
+        return;
+    }
+
+    const animal = animales.find(a => a.id === animalId);
+
+    const enfermedadData = {
+        animalId,
+        animal: `${animal.nombre} (${animal.id})`,
+        tipo,
+        fecha,
+        gravedad,
+        estado,
+        veterinario,
+        sintomas,
+        observaciones
+    };
+
+    if (currentItemId) {
+        const index = enfermedadesData.findIndex(e => e.id === currentItemId);
+        enfermedadesData[index] = { ...enfermedadesData[index], ...enfermedadData };
+        alert('✅ Enfermedad actualizada correctamente');
+    } else {
+        const newId = 'E' + String(enfermedadesData.length + 1).padStart(3, '0');
+        enfermedadesData.push({ id: newId, ...enfermedadData });
+        alert('✅ Enfermedad registrada correctamente');
+    }
+
+    closeEnfermedadModal();
+    renderEnfermedades();
+}
+
+function saveExamen() {
+    const animalId = document.getElementById('examenAnimal').value;
+    const tipo = document.getElementById('examenTipo').value;
+    const fecha = document.getElementById('examenFecha').value;
+    const resultado = document.getElementById('examenResultado').value;
+    const laboratorio = document.getElementById('examenLaboratorio').value;
+    const veterinario = document.getElementById('examenVeterinario').value;
+    const observaciones = document.getElementById('examenObservaciones').value;
+
+    if (!animalId || !tipo || !fecha) {
+        alert('⚠️ Por favor completa los campos requeridos');
+        return;
+    }
+
+    const animal = animales.find(a => a.id === animalId);
+
+    const examenData = {
+        animalId,
+        animal: `${animal.nombre} (${animal.id})`,
+        tipo,
+        fecha,
+        resultado,
+        laboratorio,
+        veterinario,
+        observaciones
+    };
+
+    if (currentItemId) {
+        const index = examenesData.findIndex(e => e.id === currentItemId);
+        examenesData[index] = { ...examenesData[index], ...examenData };
+        alert('✅ Examen actualizado correctamente');
+    } else {
+        const newId = 'EX' + String(examenesData.length + 1).padStart(3, '0');
+        examenesData.push({ id: newId, ...examenData });
+        alert('✅ Examen registrado correctamente');
+    }
+
+    closeExamenModal();
+    renderExamenes();
+}
+
+// ============================================
+// EDITAR Y ELIMINAR
+// ============================================
+function editVacuna(id) {
+    const vacuna = vacunasData.find(v => v.id === id);
+    if (!vacuna) return;
+
+    document.getElementById('modalVacunaTitle').innerHTML = '<span>✏️</span> Editar Vacunación';
+    document.getElementById('vacunaAnimal').value = vacuna.animalId;
+    document.getElementById('vacunaTipo').value = vacuna.tipo;
+    document.getElementById('vacunaFecha').value = vacuna.fecha;
+    document.getElementById('vacunaProxima').value = vacuna.proxima || '';
+    document.getElementById('vacunaLote').value = vacuna.lote || '';
+    document.getElementById('vacunaVeterinario').value = vacuna.veterinario || '';
+    document.getElementById('vacunaDosis').value = vacuna.dosis || '';
+    document.getElementById('vacunaEstado').value = vacuna.estado;
+    document.getElementById('vacunaObservaciones').value = vacuna.observaciones || '';
+
+    currentItemId = id;
+    openVacunaModal();
+}
+
+function deleteVacuna(id) {
+    if (confirm('¿Estás seguro de eliminar este registro de vacunación?')) {
+        vacunasData = vacunasData.filter(v => v.id !== id);
+        renderVacunas();
+        alert('✅ Registro eliminado');
+    }
+}
+
+function editTratamiento(id) {
+    const trat = tratamientosData.find(t => t.id === id);
+    if (!trat) return;
+
+    document.getElementById('modalTratamientoTitle').innerHTML = '<span>✏️</span> Editar Tratamiento';
+    document.getElementById('tratamientoAnimal').value = trat.animalId;
+    document.getElementById('tratamientoDiagnostico').value = trat.diagnostico;
+    document.getElementById('tratamientoFechaInicio').value = trat.fechaInicio;
+    document.getElementById('tratamientoDuracion').value = trat.duracion || '';
+    document.getElementById('tratamientoMedicamento').value = trat.medicamento;
+    document.getElementById('tratamientoDosis').value = trat.dosis || '';
+    document.getElementById('tratamientoVeterinario').value = trat.veterinario || '';
+    document.getElementById('tratamientoEstado').value = trat.estado;
+    document.getElementById('tratamientoObservaciones').value = trat.observaciones || '';
+
+    currentItemId = id;
+    openTratamientoModal();
+}
+
+function deleteTratamiento(id) {
+    if (confirm('¿Estás seguro de eliminar este registro de tratamiento?')) {
+        tratamientosData = tratamientosData.filter(t => t.id !== id);
+        renderTratamientos();
+        alert('✅ Registro eliminado');
+    }
+}
+
+function editEnfermedad(id) {
+    const enf = enfermedadesData.find(e => e.id === id);
+    if (!enf) return;
+
+    document.getElementById('modalEnfermedadTitle').innerHTML = '<span>✏️</span> Editar Enfermedad';
+    document.getElementById('enfermedadAnimal').value = enf.animalId;
+    document.getElementById('enfermedadTipo').value = enf.tipo;
+    document.getElementById('enfermedadFecha').value = enf.fecha;
+    document.getElementById('enfermedadGravedad').value = enf.gravedad;
+    document.getElementById('enfermedadEstado').value = enf.estado;
+    document.getElementById('enfermedadVeterinario').value = enf.veterinario || '';
+    document.getElementById('enfermedadSintomas').value = enf.sintomas || '';
+    document.getElementById('enfermedadObservaciones').value = enf.observaciones || '';
+
+    currentItemId = id;
+    openEnfermedadModal();
+}
+
+function deleteEnfermedad(id) {
+    if (confirm('¿Estás seguro de eliminar este registro de enfermedad?')) {
+        enfermedadesData = enfermedadesData.filter(e => e.id !== id);
+        renderEnfermedades();
+        alert('✅ Registro eliminado');
+    }
+}
+
+function editExamen(id) {
+    const exam = examenesData.find(e => e.id === id);
+    if (!exam) return;
+
+    document.getElementById('modalExamenTitle').innerHTML = '<span>✏️</span> Editar Examen';
+    document.getElementById('examenAnimal').value = exam.animalId;
+    document.getElementById('examenTipo').value = exam.tipo;
+    document.getElementById('examenFecha').value = exam.fecha;
+    document.getElementById('examenResultado').value = exam.resultado;
+    document.getElementById('examenLaboratorio').value = exam.laboratorio || '';
+    document.getElementById('examenVeterinario').value = exam.veterinario || '';
+    document.getElementById('examenObservaciones').value = exam.observaciones || '';
+
+    currentItemId = id;
+    openExamenModal();
+}
+
+function deleteExamen(id) {
+    if (confirm('¿Estás seguro de eliminar este registro de examen?')) {
+        examenesData = examenesData.filter(e => e.id !== id);
+        renderExamenes();
+        alert('✅ Registro eliminado');
+    }
+}
+
+// ============================================
+// VER DETALLES
+// ============================================
+function viewDetails(type, id) {
+    let detailsHTML = '';
+
+    if (type === 'vacuna') {
+        const vacuna = vacunasData.find(v => v.id === id);
+        detailsHTML = `
+            <div class="detail-section">
+                <h3 class="detail-section-title">Información de la Vacunación</h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Animal</div>
+                        <div class="detail-value">${vacuna.animal}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Tipo de Vacuna</div>
+                        <div class="detail-value">${vacuna.tipo}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Fecha de Aplicación</div>
+                        <div class="detail-value">${new Date(vacuna.fecha).toLocaleDateString('es-ES')}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Próxima Dosis</div>
+                        <div class="detail-value">${vacuna.proxima ? new Date(vacuna.proxima).toLocaleDateString('es-ES') : 'No programada'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Lote</div>
+                        <div class="detail-value">${vacuna.lote || 'N/A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Dosis</div>
+                        <div class="detail-value">${vacuna.dosis ? vacuna.dosis + ' ml' : 'N/A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Veterinario</div>
+                        <div class="detail-value">${vacuna.veterinario || 'N/A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Estado</div>
+                        <div class="detail-value"><span class="badge ${vacuna.estado.toLowerCase()}">${vacuna.estado}</span></div>
+                    </div>
+                </div>
+                ${vacuna.observaciones ? `<p style="margin-top:16px; color:#6B7280;">${vacuna.observaciones}</p>` : ''}
+            </div>
+        `;
+    } else if (type === 'tratamiento') {
+        const trat = tratamientosData.find(t => t.id === id);
+        detailsHTML = `
+            <div class="detail-section">
+                <h3 class="detail-section-title">Información del Tratamiento</h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Animal</div>
+                        <div class="detail-value">${trat.animal}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Diagnóstico</div>
+                        <div class="detail-value">${trat.diagnostico}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Fecha Inicio</div>
+                        <div class="detail-value">${new Date(trat.fechaInicio).toLocaleDateString('es-ES')}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Duración</div>
+                        <div class="detail-value">${trat.duracion ? trat.duracion + ' días' : 'No especificada'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Medicamento</div>
+                        <div class="detail-value">${trat.medicamento}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Dosis</div>
+                        <div class="detail-value">${trat.dosis || 'N/A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Veterinario</div>
+                        <div class="detail-value">${trat.veterinario || 'N/A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Estado</div>
+                        <div class="detail-value"><span class="badge ${trat.estado.toLowerCase()}">${trat.estado}</span></div>
+                    </div>
+                </div>
+                ${trat.observaciones ? `<p style="margin-top:16px; color:#6B7280;">${trat.observaciones}</p>` : ''}
+            </div>
+        `;
+    } else if (type === 'enfermedad') {
+        const enf = enfermedadesData.find(e => e.id === id);
+        detailsHTML = `
+            <div class="detail-section">
+                <h3 class="detail-section-title">Información de la Enfermedad</h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Animal</div>
+                        <div class="detail-value">${enf.animal}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Enfermedad</div>
+                        <div class="detail-value">${enf.tipo}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Fecha Detección</div>
+                        <div class="detail-value">${new Date(enf.fecha).toLocaleDateString('es-ES')}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Gravedad</div>
+                        <div class="detail-value">${enf.gravedad}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Estado</div>
+                        <div class="detail-value"><span class="badge ${enf.estado.toLowerCase().replace(' ', '-')}">${enf.estado}</span></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Veterinario</div>
+                        <div class="detail-value">${enf.veterinario || 'N/A'}</div>
+                    </div>
+                </div>
+                ${enf.sintomas ? `
+                <div style="margin-top:16px;">
+                    <div class="detail-label">Síntomas</div>
+                    <p style="color:#6B7280; margin-top:8px;">${enf.sintomas}</p>
+                </div>
+                ` : ''}
+                ${enf.observaciones ? `
+                <div style="margin-top:16px;">
+                    <div class="detail-label">Observaciones</div>
+                    <p style="color:#6B7280; margin-top:8px;">${enf.observaciones}</p>
+                </div>
+                ` : ''}
+            </div>
+        `;
+    } else if (type === 'examen') {
+        const exam = examenesData.find(e => e.id === id);
+        detailsHTML = `
+            <div class="detail-section">
+                <h3 class="detail-section-title">Información del Examen</h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Animal</div>
+                        <div class="detail-value">${exam.animal}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Tipo de Examen</div>
+                        <div class="detail-value">${exam.tipo}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Fecha</div>
+                        <div class="detail-value">${new Date(exam.fecha).toLocaleDateString('es-ES')}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Resultado</div>
+                        <div class="detail-value"><span class="badge ${exam.resultado.toLowerCase()}">${exam.resultado}</span></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Laboratorio</div>
+                        <div class="detail-value">${exam.laboratorio || 'N/A'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Veterinario</div>
+                        <div class="detail-value">${exam.veterinario || 'N/A'}</div>
+                    </div>
+                </div>
+                ${exam.observaciones ? `<p style="margin-top:16px; color:#6B7280;">${exam.observaciones}</p>` : ''}
+            </div>
+        `;
+    }
+
+    document.getElementById('detailsContent').innerHTML = detailsHTML;
+    document.getElementById('modalDetails').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+// ============================================
+// INICIALIZAR SELECTS
+// ============================================
+function initializeSelects() {
+    const selects = [
+        document.getElementById('vacunaAnimal'),
+        document.getElementById('tratamientoAnimal'),
+        document.getElementById('enfermedadAnimal'),
+        document.getElementById('examenAnimal')
+    ];
+
+    selects.forEach(select => {
+        if (!select) return;
+        select.innerHTML = '<option value="">Seleccionar animal</option>';
+        animales.forEach(animal => {
+            const option = document.createElement('option');
+            option.value = animal.id;
+            option.textContent = `${animal.nombre} (${animal.id})`;
+            select.appendChild(option);
+        });
+    });
+}
+
+// ============================================
+// EVENT LISTENERS
+// ============================================
+document.getElementById('btnAddVacuna').addEventListener('click', () => {
+    document.getElementById('modalVacunaTitle').innerHTML = '<span>💉</span> Registrar Vacunación';
+    document.getElementById('vacunaForm').reset();
+    currentItemId = null;
+    openVacunaModal();
+});
+
+document.getElementById('btnAddTratamiento').addEventListener('click', () => {
+    document.getElementById('modalTratamientoTitle').innerHTML = '<span>💊</span> Registrar Tratamiento';
+    document.getElementById('tratamientoForm').reset();
+    currentItemId = null;
+    openTratamientoModal();
+});
+
+document.getElementById('btnAddEnfermedad').addEventListener('click', () => {
+    document.getElementById('modalEnfermedadTitle').innerHTML = '<span>🤒</span> Registrar Enfermedad';
+    document.getElementById('enfermedadForm').reset();
+    currentItemId = null;
+    openEnfermedadModal();
+});
+
+document.getElementById('btnAddExamen').addEventListener('click', () => {
+    document.getElementById('modalExamenTitle').innerHTML = '<span>🔬</span> Registrar Examen';
+    document.getElementById('examenForm').reset();
+    currentItemId = null;
+    openExamenModal();
+});
+
+// Cerrar modales al hacer click fuera
+document.querySelectorAll('.modal-overlay').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    });
+});
+
+// ============================================
+// INICIALIZAR
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+    renderVacunas();
+    initializeSelects();
+});
+</script>

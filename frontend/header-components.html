@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CattleSIS - Componentes Header</title>
+    <style>
+        /* ============================================
+           ESTILOS PARA COMPONENTES DE HEADER
+        ============================================ */
+        
+        /* Variables de colores */
+        :root {
+            --color-primary: #4A90E2;
+            --color-success: #10B981;
+            --color-warning: #F59E0B;
+            --color-danger: #EF4444;
+            --color-info: #3B82F6;
+            --shadow-dropdown: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Reset para este componente */
+        .header-components * {
+            box-sizing: border-box;
+        }
+
+        /* ============================================
+           ESTILOS COMPARTIDOS PARA DROPDOWNS
+        ============================================ */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-dropdown);
+            min-width: 320px;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #E5E7EB;
+            overflow: hidden;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 16px 20px 12px;
+            border-bottom: 1px solid #F3F4F6;
+            background: #F9FAFB;
+        }
+
+        .dropdown-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1F2937;
+            margin: 0;
+        }
+
+        .dropdown-body {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .dropdown-footer {
+            padding: 12px 20px;
+            border-top: 1px solid #F3F4F6;
+            background: #F9FAFB;
+            text-align: center;
+        }
+
+        /* ============================================
+           BOTÓN DE NOTIFICACIONES
+        ============================================ */
+        .notification-btn {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            background: #F3F4F6;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            margin-right: 12px;
+        }
+
+        .notification-btn:hover {
+            background: #E5E7EB;
+            transform: translateY(-1px);
+        }
+
+        .notification-btn svg {
+            width: 20px;
+            height: 20px;
+            color: #6B7280;
+            transition: color 0.2s ease;
+        }
+
+        .notification-btn:hover svg {
+            color: #374151;
+        }
+
+        /* Badge de contador */
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: var(--color-danger);
+            color: white;
+            border-radius: 10px;
+            min-width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            border: 2px solid white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Items de notificación */
+        .notification-item {
+            display: flex;
+            gap: 12px;
+            padding: 16px 20px;
+            transition: background 0.2s ease;
+            cursor: pointer;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .notification-item:hover {
+            background: #F9FAFB;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-item.unread {
+            background: #EFF6FF;
+            border-left: 3px solid var(--color-info);
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.success { background: #DCFCE7; color: var(--color-success); }
+        .notification-icon.warning { background: #FEF3C7; color: var(--color-warning); }
+        .notification-icon.danger { background: #FEE2E2; color: var(--color-danger); }
+        .notification-icon.info { background: #DBEAFE; color: var(--color-info); }
+
+        .notification-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .notification-text {
+            font-size: 13px;
+            color: #6B7280;
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+
+        .notification-time {
+            font-size: 12px;
+            color: #9CA3AF;
+            font-weight: 500;
+        }
+
+        /* Empty state */
+        .notifications-empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: #9CA3AF;
+        }
+
+        .notifications-empty svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        /* ============================================
+           BOTÓN/MENÚ DE USUARIO
+        ============================================ */
+        .user-button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px 8px 8px;
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 180px;
+        }
+
+        .user-button:hover {
+            border-color: #D1D5DB;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--color-primary) 0%, #667eea 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 2px;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #6B7280;
+            font-weight: 500;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-chevron {
+            color: #9CA3AF;
+            font-size: 12px;
+            transition: transform 0.2s ease;
+        }
+
+        .dropdown.show .user-chevron {
+            transform: rotate(180deg);
+        }
+
+        /* Items del menú de usuario */
+        .user-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #374151;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .user-menu-item:hover {
+            background: #F9FAFB;
+            color: #1F2937;
+        }
+
+        .user-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-menu-item.danger {
+            color: var(--color-danger);
+        }
+
+        .user-menu-item.danger:hover {
+            background: #FEE2E2;
+            color: var(--color-danger);
+        }
+
+        .user-menu-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .user-menu-text {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Divider en menú de usuario */
+        .user-menu-divider {
+            height: 1px;
+            background: #E5E7EB;
+            margin: 8px 0;
+        }
+
+        /* ============================================
+           RESPONSIVE
+        ============================================ */
+        @media (max-width: 768px) {
+            .dropdown-menu {
+                min-width: 280px;
+                right: -10px;
+            }
+
+            .user-button {
+                min-width: 140px;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .user-chevron {
+                display: none;
+            }
+        }
+
+        /* ============================================
+           SCROLLBAR PERSONALIZADA
+        ============================================ */
+        .dropdown-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .dropdown-body::-webkit-scrollbar-track {
+            background: #F3F4F6;
+        }
+
+        .dropdown-body::-webkit-scrollbar-thumb {
+            background: #D1D5DB;
+            border-radius: 3px;
+        }
+
+        .dropdown-body::-webkit-scrollbar-thumb:hover {
+            background: #9CA3AF;
+        }
+
+        /* ============================================
+           UTILIDADES
+        ============================================ */
+        .text-truncate {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .btn-link {
+            background: none;
+            border: none;
+            color: var(--color-primary);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background 0.2s ease;
+        }
+
+        .btn-link:hover {
+            background: #F3F4F6;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-components">
+        <!-- ============================================
+             COMPONENTE DE NOTIFICACIONES
+        ============================================ -->
+        <div class="dropdown" id="notificationsDropdown">
+            <button class="notification-btn" onclick="NotificationManager.toggle()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                </svg>
+                <span class="notification-badge" id="notificationBadge">3</span>
+            </button>
+            
+            <div class="dropdown-menu" id="notificationsMenu">
+                <div class="dropdown-header">
+                    <h3 class="dropdown-title">Notificaciones</h3>
+                </div>
+                <div class="dropdown-body" id="notificationsBody">
+                    <!-- Las notificaciones se cargan dinámicamente aquí -->
+                </div>
+                <div class="dropdown-footer">
+                    <button class="btn-link" onclick="NotificationManager.markAllAsRead()">
+                        Marcar todas como leídas
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================
+             COMPONENTE DE USUARIO
+        ============================================ -->
+        <div class="dropdown" id="userDropdown">
+            <button class="user-button" onclick="UserManager.toggle()">
+                <div class="user-avatar" id="userAvatar">JP</div>
+                <div class="user-info">
+                    <span class="user-name" id="userName">Cargando...</span>
+                    <span class="user-role" id="userRole">...</span>
+                </div>
+                <span class="user-chevron">▼</span>
+            </button>
+            
+            <div class="dropdown-menu" id="userMenu">
+                <div class="dropdown-header">
+                    <h3 class="dropdown-title">Mi Cuenta</h3>
+                </div>
+                <div class="dropdown-body">
+                    <a href="#" class="user-menu-item" onclick="UserManager.openProfile()">
+                        <svg class="user-menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        <span class="user-menu-text">Mi Perfil</span>
+                    </a>
+                    
+                    <a href="#" class="user-menu-item" onclick="UserManager.openSettings()">
+                        <svg class="user-menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span class="user-menu-text">Configuración</span>
+                    </a>
+                    
+                    <a href="#" class="user-menu-item" onclick="UserManager.openHelp()">
+                        <svg class="user-menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="user-menu-text">Ayuda & Soporte</span>
+                    </a>
+                    
+                    <div class="user-menu-divider"></div>
+                    
+                    <a href="#" class="user-menu-item danger" onclick="UserManager.logout()">
+                        <svg class="user-menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                        <span class="user-menu-text">Cerrar Sesión</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         JAVASCRIPT PARA FUNCIONALIDAD
+    ============================================ -->
+    <script>
+        // ============================================
+        // MANAGER DE NOTIFICACIONES
+        // ============================================
+        const NotificationManager = {
+            notifications: [
+                {
+                    id: 1,
+                    type: 'warning',
+                    title: 'Vacunación Pendiente',
+                    text: '15 animales requieren vacunación contra aftosa',
+                    time: 'Hace 2 horas',
+                    unread: true
+                },
+                {
+                    id: 2,
+                    type: 'success',
+                    title: 'Producción de Leche',
+                    text: 'Nuevo récord diario: 1,250 litros',
+                    time: 'Hace 5 horas',
+                    unread: true
+                },
+                {
+                    id: 3,
+                    type: 'info',
+                    title: 'Reporte Mensual',
+                    text: 'El reporte de agosto está listo para revisión',
+                    time: 'Ayer',
+                    unread: false
+                },
+                {
+                    id: 4,
+                    type: 'danger',
+                    title: 'Animal Enfermo',
+                    text: 'Vaca #A204 presenta síntomas de mastitis',
+                    time: 'Hace 1 día',
+                    unread: false
+                }
+            ],
+
+            init() {
+                this.loadNotifications();
+                this.updateBadge();
+                // Simular nuevas notificaciones cada 30 segundos
+                setInterval(() => this.simulateNewNotification(), 30000);
+            },
+
+            toggle() {
+                const dropdown = document.getElementById('notificationsDropdown');
+                const menu = document.getElementById('notificationsMenu');
+                
+                // Cerrar otros dropdowns
+                UserManager.close();
+                
+                dropdown.classList.toggle('show');
+                menu.classList.toggle('show');
+                
+                if (dropdown.classList.contains('show')) {
+                    this.loadNotifications();
+                }
+            },
+
+            close() {
+                const dropdown = document.getElementById('notificationsDropdown');
+                const menu = document.getElementById('notificationsMenu');
+                dropdown.classList.remove('show');
+                menu.classList.remove('show');
+            },
+
+            loadNotifications() {
+                const container = document.getElementById('notificationsBody');
+                
+                if (this.notifications.length === 0) {
+                    container.innerHTML = `
+                        <div class="notifications-empty">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                            </svg>
+                            <div>No hay notificaciones</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = this.notifications.map(notification => `
+                    <div class="notification-item ${notification.unread ? 'unread' : ''}" 
+                         onclick="NotificationManager.markAsRead(${notification.id})">
+                        <div class="notification-icon ${notification.type}">
+                            ${this.getNotificationIcon(notification.type)}
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">${notification.title}</div>
+                            <div class="notification-text">${notification.text}</div>
+                            <div class="notification-time">${notification.time}</div>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            getNotificationIcon(type) {
+                const icons = {
+                    success: '✅',
+                    warning: '⚠️',
+                    danger: '🚨',
+                    info: 'ℹ️'
+                };
+                return icons[type] || 'ℹ️';
+            },
+
+            markAsRead(id) {
+                const notification = this.notifications.find(n => n.id === id);
+                if (notification) {
+                    notification.unread = false;
+                    this.updateBadge();
+                    this.loadNotifications();
+                }
+            },
+
+            markAllAsRead() {
+                this.notifications.forEach(n => n.unread = false);
+                this.updateBadge();
+                this.loadNotifications();
+            },
+
+            updateBadge() {
+                const badge = document.getElementById('notificationBadge');
+                const unreadCount = this.notifications.filter(n => n.unread).length;
+                
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            },
+
+            addNotification(notification) {
+                notification.id = Date.now();
+                notification.time = 'Ahora';
+                notification.unread = true;
+                this.notifications.unshift(notification);
+                
+                // Mantener máximo 20 notificaciones
+                if (this.notifications.length > 20) {
+                    this.notifications = this.notifications.slice(0, 20);
+                }
+                
+                this.updateBadge();
+                if (document.getElementById('notificationsDropdown').classList.contains('show')) {
+                    this.loadNotifications();
+                }
+            },
+
+            simulateNewNotification() {
+                const sampleNotifications = [
+                    {
+                        type: 'info',
+                        title: 'Sistema Actualizado',
+                        text: 'Se ha actualizado el módulo de reportes'
+                    },
+                    {
+                        type: 'warning',
+                        title: 'Stock Bajo',
+                        text: 'Quedan solo 5 dosis de vitamina B12'
+                    },
+                    {
+                        type: 'success',
+                        title: 'Sincronización Completa',
+                        text: 'Datos sincronizados correctamente'
+                    }
+                ];
+                
+                // 20% de probabilidad de generar nueva notificación
+                if (Math.random() < 0.2) {
+                    const randomNotification = sampleNotifications[
+                        Math.floor(Math.random() * sampleNotifications.length)
+                    ];
+                    this.addNotification(randomNotification);
+                }
+            }
+        };
+
+        // ============================================
+        // MANAGER DE USUARIO
+        // ============================================
+        const UserManager = {
+            user: null,
+
+            init() {
+                this.loadUser();
+            },
+
+            loadUser() {
+                // Cargar datos del usuario desde localStorage
+                this.user = JSON.parse(localStorage.getItem('user') || '{}');
+                
+                // Datos por defecto si no hay usuario
+                if (!this.user.nombre) {
+                    this.user = {
+                        nombre: 'Juan Pérez',
+                        rol: 'Administrador',
+                        email: 'juan.perez@cattlesis.com',
+                        avatar: 'JP'
+                    };
+                }
+
+                this.updateUI();
+            },
+
+            updateUI() {
+                const userName = document.getElementById('userName');
+                const userRole = document.getElementById('userRole');
+                const userAvatar = document.getElementById('userAvatar');
+
+                if (userName) userName.textContent = this.user.nombre;
+                if (userRole) userRole.textContent = this.user.rol;
+                if (userAvatar) userAvatar.textContent = this.user.avatar || this.user.nombre[0].toUpperCase();
+            },
+
+            toggle() {
+                const dropdown = document.getElementById('userDropdown');
+                const menu = document.getElementById('userMenu');
+                
+                // Cerrar otros dropdowns
+                NotificationManager.close();
+                
+                dropdown.classList.toggle('show');
+                menu.classList.toggle('show');
+            },
+
+            close() {
+                const dropdown = document.getElementById('userDropdown');
+                const menu = document.getElementById('userMenu');
+                dropdown.classList.remove('show');
+                menu.classList.remove('show');
+            },
+
+            openProfile() {
+                this.close();
+                alert('Función "Mi Perfil" - En desarrollo\n\nAquí podrás:\n• Editar información personal\n• Cambiar foto de perfil\n• Actualizar datos de contacto');
+            },
+
+            openSettings() {
+                this.close();
+                // Aquí puedes cargar el módulo de configuración
+                const configBtn = document.querySelector('[data-module="configuracion"]');
+                if (configBtn) {
+                    configBtn.click();
+                } else {
+                    alert('Función "Configuración" - En desarrollo\n\nAquí podrás:\n• Cambiar preferencias\n• Configurar notificaciones\n• Gestionar permisos');
+                }
+            },
+
+            openHelp() {
+                this.close();
+                alert('Función "Ayuda & Soporte" - En desarrollo\n\nAquí encontrarás:\n• Manual de usuario\n• Preguntas frecuentes\n• Contacto con soporte\n• Tutoriales en video');
+            },
+
+            logout() {
+                this.close();
+                if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                }
+            }
+        };
+
+        // ============================================
+        // CERRAR DROPDOWNS AL HACER CLIC FUERA
+        // ============================================
+        document.addEventListener('click', function(event) {
+            const notificationDropdown = document.getElementById('notificationsDropdown');
+            const userDropdown = document.getElementById('userDropdown');
+
+            if (!notificationDropdown.contains(event.target)) {
+                NotificationManager.close();
+            }
+
+            if (!userDropdown.contains(event.target)) {
+                UserManager.close();
+            }
+        });
+
+        // ============================================
+        // INICIALIZAR AL CARGAR
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            NotificationManager.init();
+            UserManager.init();
+        });
+
+        // ============================================
+        // EXPORTAR PARA USO GLOBAL
+        // ============================================
+        window.NotificationManager = NotificationManager;
+        window.UserManager = UserManager;
+    </script>
+</body>
+</html>

@@ -1,0 +1,2302 @@
+<!-- ============================================
+     MÓDULO: ALIMENTACIÓN Y NUTRICIÓN
+     Sistema CattleSIS - Gestión Ganadera
+============================================ -->
+
+<style>
+    .feed-container {
+        max-width: 1800px;
+        margin: 0 auto;
+        animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header del módulo */
+    .module-header {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 32px;
+        border-radius: 16px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow-primary);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-left h1 {
+        font-size: 32px;
+        font-weight: 900;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .header-left p {
+        opacity: 0.9;
+        font-size: 15px;
+    }
+
+    .header-stats {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
+        margin-top: 24px;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 36px;
+        font-weight: 900;
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        font-size: 13px;
+        opacity: 0.9;
+    }
+
+    /* Tabs */
+    .tabs-container {
+        background: white;
+        border-radius: 16px;
+        padding: 20px 24px 0;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .tabs {
+        display: flex;
+        gap: 8px;
+        border-bottom: 2px solid #F3F4F6;
+        overflow-x: auto;
+    }
+
+    .tab {
+        padding: 12px 24px;
+        border: none;
+        background: none;
+        font-size: 14px;
+        font-weight: 600;
+        color: #6B7280;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .tab:hover {
+        color: var(--color-primary);
+    }
+
+    .tab.active {
+        color: var(--color-primary);
+        border-bottom-color: var(--color-primary);
+    }
+
+    /* Toolbar */
+    .toolbar {
+        background: white;
+        padding: 24px;
+        border-radius: 16px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .toolbar-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .search-box {
+        flex: 1;
+        max-width: 400px;
+        position: relative;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 12px 16px 12px 44px;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .search-box input:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 4px var(--color-primary-very-light);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        color: #9CA3AF;
+    }
+
+    .btn-primary {
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-primary);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-primary-hover);
+    }
+
+    .filters {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #6B7280;
+        margin-bottom: 6px;
+        display: block;
+        text-transform: uppercase;
+    }
+
+    .filter-select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 2px solid #E5E7EB;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #1F2937;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: white;
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--color-primary);
+    }
+
+    /* Grid de tarjetas */
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .feed-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .feed-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .feed-card.concentrado {
+        border-color: #F59E0B;
+    }
+
+    .feed-card.forraje {
+        border-color: var(--color-success);
+    }
+
+    .feed-card.sales {
+        border-color: var(--color-primary);
+    }
+
+    .feed-card.suplemento {
+        border-color: #8B5CF6;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+    }
+
+    .card-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: #1F2937;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .card-stock-badge {
+        font-size: 13px;
+        font-weight: 700;
+        padding: 6px 12px;
+        border-radius: 6px;
+    }
+
+    .card-stock-badge.alto {
+        background: var(--color-success-light);
+        color: var(--color-success);
+    }
+
+    .card-stock-badge.medio {
+        background: var(--color-warning-light);
+        color: var(--color-warning);
+    }
+
+    .card-stock-badge.bajo {
+        background: rgba(239, 68, 68, 0.1);
+        color: #EF4444;
+    }
+
+    .card-body {
+        margin-bottom: 16px;
+    }
+
+    .card-info {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-top: 12px;
+    }
+
+    .card-info-item {
+        font-size: 13px;
+        color: #6B7280;
+    }
+
+    .card-info-item strong {
+        color: #1F2937;
+        font-weight: 700;
+    }
+
+    .card-footer {
+        display: flex;
+        gap: 8px;
+        padding-top: 16px;
+        border-top: 2px solid #F3F4F6;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: #E5E7EB;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 8px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+    }
+
+    .progress-fill.alto {
+        background: var(--color-success);
+    }
+
+    .progress-fill.medio {
+        background: var(--color-warning);
+    }
+
+    .progress-fill.bajo {
+        background: #EF4444;
+    }
+
+    /* Tabla */
+    .table-container {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        margin-bottom: 24px;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table thead {
+        background: #F9FAFB;
+    }
+
+    .data-table th {
+        padding: 16px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 700;
+        color: #6B7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #E5E7EB;
+    }
+
+    .data-table td {
+        padding: 16px;
+        border-bottom: 1px solid #F3F4F6;
+        font-size: 14px;
+        color: #1F2937;
+    }
+
+    .data-table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .data-table tbody tr:hover {
+        background: #F9FAFB;
+    }
+
+    /* Badges */
+    .badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .badge.activa {
+        background: var(--color-success-light);
+        color: var(--color-success);
+    }
+
+    .badge.inactiva {
+        background: rgba(107, 114, 128, 0.1);
+        color: #6B7280;
+    }
+
+    .badge.suministrado {
+        background: var(--color-success-light);
+        color: var(--color-success);
+    }
+
+    .badge.pendiente {
+        background: var(--color-warning-light);
+        color: var(--color-warning);
+    }
+
+    /* Botones de acción */
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-action {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-view {
+        background: rgba(59, 130, 246, 0.1);
+        color: #2563EB;
+    }
+
+    .btn-view:hover {
+        background: #2563EB;
+        color: white;
+    }
+
+    .btn-edit {
+        background: rgba(245, 158, 11, 0.1);
+        color: #D97706;
+    }
+
+    .btn-edit:hover {
+        background: #F59E0B;
+        color: white;
+    }
+
+    .btn-delete {
+        background: rgba(239, 68, 68, 0.1);
+        color: #DC2626;
+    }
+
+    .btn-delete:hover {
+        background: #EF4444;
+        color: white;
+    }
+
+    /* Modal */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        max-width: 800px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .modal-header {
+        padding: 24px;
+        border-bottom: 2px solid #F3F4F6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-size: 24px;
+        font-weight: 800;
+        color: #1F2937;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .btn-close {
+        width: 36px;
+        height: 36px;
+        border: none;
+        background: #F3F4F6;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 20px;
+        color: #6B7280;
+        transition: all 0.2s ease;
+    }
+
+    .btn-close:hover {
+        background: #E5E7EB;
+        color: #1F2937;
+    }
+
+    .modal-body {
+        padding: 24px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #374151;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .form-label .required {
+        color: #EF4444;
+    }
+
+    .form-input {
+        padding: 12px 16px;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #1F2937;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 4px var(--color-primary-very-light);
+    }
+
+    .form-select {
+        padding: 12px 16px;
+        border: 2px solid #E5E7EB;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #1F2937;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .form-select:focus {
+        outline: none;
+        border-color: var(--color-primary);
+    }
+
+    .modal-footer {
+        padding: 20px 24px;
+        border-top: 2px solid #F3F4F6;
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    .btn-secondary {
+        padding: 12px 24px;
+        border: 2px solid #E5E7EB;
+        background: white;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #6B7280;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+        border-color: #D1D5DB;
+        background: #F9FAFB;
+    }
+
+    .btn-save {
+        padding: 12px 32px;
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-primary);
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-primary-hover);
+    }
+
+    /* Detalles */
+    .detail-section {
+        margin-bottom: 24px;
+    }
+
+    .detail-section-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1F2937;
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #F3F4F6;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .detail-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #6B7280;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+    }
+
+    .detail-value {
+        font-size: 15px;
+        font-weight: 600;
+        color: #1F2937;
+    }
+
+    /* Alertas */
+    .alert-section {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        margin-bottom: 24px;
+    }
+
+    .alert-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid #F3F4F6;
+    }
+
+    .alert-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: #1F2937;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .alert-item {
+        display: flex;
+        gap: 14px;
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        border-left: 4px solid;
+        transition: all 0.2s ease;
+    }
+
+    .alert-item:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .alert-item.urgente {
+        background: #FEF2F2;
+        border-color: #EF4444;
+    }
+
+    .alert-item.advertencia {
+        background: #FFFBEB;
+        border-color: #F59E0B;
+    }
+
+    .alert-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .alert-content {
+        flex: 1;
+    }
+
+    .alert-content-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1F2937;
+        margin-bottom: 4px;
+    }
+
+    .alert-desc {
+        font-size: 13px;
+        color: #6B7280;
+        line-height: 1.5;
+    }
+
+    /* Responsive */
+    @media (max-width: 1400px) {
+        .header-stats {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .header-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .cards-grid {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            gap: 16px;
+            text-align: center;
+        }
+
+        .toolbar-top {
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .search-box {
+            max-width: 100%;
+        }
+
+        .filters {
+            flex-direction: column;
+        }
+
+        .cards-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="feed-container">
+    <!-- Header del módulo -->
+    <div class="module-header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1>🌾 Alimentación y Nutrición</h1>
+                <p>Controla la dieta y nutrición de tu ganado para máxima productividad</p>
+            </div>
+        </div>
+        
+        <div class="header-stats">
+            <div class="stat-card">
+                <div class="stat-value">5</div>
+                <div class="stat-label">Tipos de Alimento</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">8,500 kg</div>
+                <div class="stat-label">Stock Total</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">$12,450</div>
+                <div class="stat-label">Costo Mensual</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">36 kg/día</div>
+                <div class="stat-label">Consumo Promedio</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Stock Bajo</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alertas de Alimentación -->
+    <div class="alert-section">
+        <div class="alert-header">
+            <div class="alert-title">⚠️ Alertas de Inventario</div>
+        </div>
+
+        <div class="alert-item urgente">
+            <div class="alert-icon" style="background: #FEE2E2; color: #EF4444;">🌾</div>
+            <div class="alert-content">
+                <div class="alert-content-title">Stock Crítico - Concentrado Lechero</div>
+                <div class="alert-desc">Solo quedan 150 kg - Alcanza para 4 días. Contactar proveedor urgente.</div>
+            </div>
+        </div>
+
+        <div class="alert-item advertencia">
+            <div class="alert-icon" style="background: #FEF3C7; color: #F59E0B;">🧂</div>
+            <div class="alert-content">
+                <div class="alert-content-title">Stock Bajo - Sales Mineralizadas</div>
+                <div class="alert-desc">200 kg disponibles - Suficiente para 10 días. Programar pedido.</div>
+            </div>
+        </div>
+
+        <div class="alert-item advertencia">
+            <div class="alert-icon" style="background: #FEF3C7; color: #F59E0B;">💊</div>
+            <div class="alert-content">
+                <div class="alert-content-title">Revisar Suplemento Vitamínico</div>
+                <div class="alert-desc">Vence en 15 días - 80 kg en stock</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs de navegación -->
+    <div class="tabs-container">
+        <div class="tabs">
+            <button class="tab active" data-tab="inventario">📦 Inventario</button>
+            <button class="tab" data-tab="dietas">📋 Planes de Dieta</button>
+            <button class="tab" data-tab="suministros">🍽️ Suministros Diarios</button>
+            <button class="tab" data-tab="proveedores">🚚 Proveedores</button>
+            <button class="tab" data-tab="costos">💰 Costos</button>
+        </div>
+    </div>
+
+    <!-- TAB: INVENTARIO -->
+    <div id="inventarioContent">
+        <div class="toolbar">
+            <div class="toolbar-top">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInventario" placeholder="Buscar alimento...">
+                </div>
+                <button class="btn-primary" id="btnAddInventario">
+                    <span>➕</span> Agregar Alimento
+                </button>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Categoría</label>
+                    <select class="filter-select" id="filterCategoria">
+                        <option value="">Todas</option>
+                        <option value="Concentrado">Concentrado</option>
+                        <option value="Forraje">Forraje</option>
+                        <option value="Sales">Sales Mineralizadas</option>
+                        <option value="Suplemento">Suplemento</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Stock</label>
+                    <select class="filter-select" id="filterStock">
+                        <option value="">Todos</option>
+                        <option value="Alto">Alto</option>
+                        <option value="Medio">Medio</option>
+                        <option value="Bajo">Bajo</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="cards-grid" id="inventarioGrid">
+            <!-- Los alimentos se cargan con JavaScript -->
+        </div>
+    </div>
+
+    <!-- TAB: PLANES DE DIETA -->
+    <div id="dietasContent" style="display: none;">
+        <div class="toolbar">
+            <div class="toolbar-top">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchDietas" placeholder="Buscar plan...">
+                </div>
+                <button class="btn-primary" id="btnAddDieta">
+                    <span>➕</span> Crear Plan de Dieta
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Categoría Animal</th>
+                            <th>Alimento Principal</th>
+                            <th>Cantidad/Día</th>
+                            <th>Suplementos</th>
+                            <th>Costo/Día</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dietasTableBody">
+                        <!-- Las dietas se cargan con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: SUMINISTROS DIARIOS -->
+    <div id="suministrosContent" style="display: none;">
+        <div class="toolbar">
+            <div class="toolbar-top">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchSuministros" placeholder="Buscar suministro...">
+                </div>
+                <button class="btn-primary" id="btnAddSuministro">
+                    <span>➕</span> Registrar Suministro
+                </button>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Fecha</label>
+                    <input type="date" class="filter-select" id="filterFechaSuministro">
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Estado</label>
+                    <select class="filter-select" id="filterEstadoSuministro">
+                        <option value="">Todos</option>
+                        <option value="Suministrado">Suministrado</option>
+                        <option value="Pendiente">Pendiente</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Alimento</th>
+                            <th>Cantidad</th>
+                            <th>Potrero/Grupo</th>
+                            <th>Responsable</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="suministrosTableBody">
+                        <!-- Los suministros se cargan con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: PROVEEDORES -->
+    <div id="proveedoresContent" style="display: none;">
+        <div class="toolbar">
+            <div class="toolbar-top">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchProveedores" placeholder="Buscar proveedor...">
+                </div>
+                <button class="btn-primary" id="btnAddProveedor">
+                    <span>➕</span> Agregar Proveedor
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Proveedor</th>
+                            <th>Productos</th>
+                            <th>Contacto</th>
+                            <th>Teléfono</th>
+                            <th>Última Compra</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="proveedoresTableBody">
+                        <!-- Los proveedores se cargan con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: COSTOS -->
+    <div id="costosContent" style="display: none;">
+        <div class="toolbar">
+            <div class="toolbar-top">
+                <h3 style="font-size: 18px; font-weight: 700; color: #1F2937;">Análisis de Costos de Alimentación</h3>
+                <div class="filters" style="max-width: 400px;">
+                    <div class="filter-group">
+                        <label class="filter-label">Período</label>
+                        <select class="filter-select" id="filterPeriodo">
+                            <option value="mes">Este Mes</option>
+                            <option value="trimestre">Trimestre</option>
+                            <option value="año">Año</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+            <div style="background: white; padding: 24px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border-left: 4px solid #F59E0B;">
+                <div style="font-size: 14px; color: #6B7280; margin-bottom: 8px; font-weight: 600;">Costo Total Mensual</div>
+                <div style="font-size: 32px; font-weight: 800; color: #1F2937;">$12,450</div>
+                <div style="font-size: 13px; color: #10B981; margin-top: 8px;">↓ 5% vs mes anterior</div>
+            </div>
+
+            <div style="background: white; padding: 24px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border-left: 4px solid var(--color-primary);">
+                <div style="font-size: 14px; color: #6B7280; margin-bottom: 8px; font-weight: 600;">Costo por Animal/Día</div>
+                <div style="font-size: 32px; font-weight: 800; color: #1F2937;">$17.70</div>
+                <div style="font-size: 13px; color: #6B7280; margin-top: 8px;">234 animales</div>
+            </div>
+
+            <div style="background: white; padding: 24px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border-left: 4px solid var(--color-success);">
+                <div style="font-size: 14px; color: #6B7280; margin-bottom: 8px; font-weight: 600;">Consumo Total/Día</div>
+                <div style="font-size: 32px; font-weight: 800; color: #1F2937;">840 kg</div>
+                <div style="font-size: 13px; color: #6B7280; margin-top: 8px;">3.6 kg/animal</div>
+            </div>
+
+            <div style="background: white; padding: 24px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border-left: 4px solid #8B5CF6;">
+                <div style="font-size: 14px; color: #6B7280; margin-bottom: 8px; font-weight: 600;">Total Compras</div>
+                <div style="font-size: 32px; font-weight: 800; color: #1F2937;">$45,200</div>
+                <div style="font-size: 13px; color: #6B7280; margin-top: 8px;">Este mes</div>
+            </div>
+        </div>
+
+        <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+            <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 20px;">Desglose por Categoría</h4>
+            
+            <div style="margin-bottom: 24px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-weight: 600;">Concentrados</span>
+                    <span style="font-weight: 700;">$7,200 (58%)</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill alto" style="width: 58%;"></div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-weight: 600;">Forraje</span>
+                    <span style="font-weight: 700;">$3,100 (25%)</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill medio" style="width: 25%;"></div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-weight: 600;">Sales Mineralizadas</span>
+                    <span style="font-weight: 700;">$1,450 (12%)</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill medio" style="width: 12%;"></div>
+                </div>
+            </div>
+
+            <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-weight: 600;">Suplementos</span>
+                    <span style="font-weight: 700;">$700 (5%)</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill bajo" style="width: 5%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Agregar/Editar Alimento en Inventario -->
+<div class="modal-overlay" id="modalInventario">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalInventarioTitle">
+                <span>📦</span> Agregar Alimento
+            </h2>
+            <button class="btn-close" onclick="closeInventarioModal()">✖</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="inventarioForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Nombre del Alimento <span class="required">*</span>
+                        </label>
+                        <input type="text" class="form-input" id="inventarioNombre" placeholder="Ej: Concentrado Lechero" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Categoría <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="inventarioCategoria" required>
+                            <option value="">Seleccionar categoría</option>
+                            <option value="Concentrado">Concentrado</option>
+                            <option value="Forraje">Forraje</option>
+                            <option value="Sales">Sales Mineralizadas</option>
+                            <option value="Suplemento">Suplemento Vitamínico</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Stock Actual (kg) <span class="required">*</span>
+                        </label>
+                        <input type="number" class="form-input" id="inventarioStock" placeholder="Ej: 500" step="0.1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Stock Mínimo (kg) <span class="required">*</span>
+                        </label>
+                        <input type="number" class="form-input" id="inventarioStockMin" placeholder="Ej: 100" step="0.1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Unidad
+                        </label>
+                        <select class="form-select" id="inventarioUnidad">
+                            <option value="kg">Kilogramos (kg)</option>
+                            <option value="ton">Toneladas (ton)</option>
+                            <option value="bulto">Bultos</option>
+                            <option value="paca">Pacas</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Costo por Unidad ($)
+                        </label>
+                        <input type="number" class="form-input" id="inventarioCosto" placeholder="Ej: 25.50" step="0.01">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Proveedor</label>
+                        <input type="text" class="form-input" id="inventarioProveedor" placeholder="Ej: Alimentos del Campo S.A.">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Ubicación</label>
+                        <input type="text" class="form-input" id="inventarioUbicacion" placeholder="Ej: Bodega A - Estante 2">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">Observaciones</label>
+                        <textarea class="form-input" id="inventarioObservaciones" rows="3" placeholder="Notas adicionales..."></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeInventarioModal()">Cancelar</button>
+            <button class="btn-save" onclick="saveInventario()">💾 Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Crear/Editar Plan de Dieta -->
+<div class="modal-overlay" id="modalDieta">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalDietaTitle">
+                <span>📋</span> Crear Plan de Dieta
+            </h2>
+            <button class="btn-close" onclick="closeDietaModal()">✖</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="dietaForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Categoría de Animal <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="dietaCategoria" required>
+                            <option value="">Seleccionar categoría</option>
+                            <option value="Vaca Lechera">Vaca Lechera</option>
+                            <option value="Vaca Seca">Vaca Seca</option>
+                            <option value="Ternero">Ternero</option>
+                            <option value="Novillo">Novillo</option>
+                            <option value="Toro">Toro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Alimento Principal <span class="required">*</span>
+                        </label>
+                        <input type="text" class="form-input" id="dietaAlimento" placeholder="Ej: Concentrado Lechero" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Cantidad por Animal/Día (kg) <span class="required">*</span>
+                        </label>
+                        <input type="number" class="form-input" id="dietaCantidad" placeholder="Ej: 8" step="0.1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Frecuencia de Suministro
+                        </label>
+                        <select class="form-select" id="dietaFrecuencia">
+                            <option value="1">1 vez al día</option>
+                            <option value="2">2 veces al día</option>
+                            <option value="3">3 veces al día</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Suplementos</label>
+                        <input type="text" class="form-input" id="dietaSuplementos" placeholder="Ej: Sales mineralizadas, Vitaminas">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Costo por Animal/Día ($)
+                        </label>
+                        <input type="number" class="form-input" id="dietaCosto" placeholder="Ej: 15.50" step="0.01">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Estado</label>
+                        <select class="form-select" id="dietaEstado">
+                            <option value="Activa">Activa</option>
+                            <option value="Inactiva">Inactiva</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">Observaciones</label>
+                        <textarea class="form-input" id="dietaObservaciones" rows="3" placeholder="Instrucciones especiales, horarios..."></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeDietaModal()">Cancelar</button>
+            <button class="btn-save" onclick="saveDieta()">💾 Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Registrar Suministro -->
+<div class="modal-overlay" id="modalSuministro">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalSuministroTitle">
+                <span>🍽️</span> Registrar Suministro
+            </h2>
+            <button class="btn-close" onclick="closeSuministroModal()">✖</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="suministroForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Fecha <span class="required">*</span>
+                        </label>
+                        <input type="date" class="form-input" id="suministroFecha" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Alimento <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="suministroAlimento" required>
+                            <option value="">Seleccionar alimento</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Cantidad (kg) <span class="required">*</span>
+                        </label>
+                        <input type="number" class="form-input" id="suministroCantidad" placeholder="Ej: 150" step="0.1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Potrero/Grupo <span class="required">*</span>
+                        </label>
+                        <input type="text" class="form-input" id="suministroPotrero" placeholder="Ej: Potrero A" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Responsable</label>
+                        <input type="text" class="form-input" id="suministroResponsable" placeholder="Nombre del responsable">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Hora</label>
+                        <input type="time" class="form-input" id="suministroHora">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Estado</label>
+                        <select class="form-select" id="suministroEstado">
+                            <option value="Suministrado">Suministrado</option>
+                            <option value="Pendiente">Pendiente</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">Observaciones</label>
+                        <textarea class="form-input" id="suministroObservaciones" rows="3" placeholder="Notas sobre el suministro..."></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeSuministroModal()">Cancelar</button>
+            <button class="btn-save" onclick="saveSuministro()">💾 Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Agregar Proveedor -->
+<div class="modal-overlay" id="modalProveedor">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalProveedorTitle">
+                <span>🚚</span> Agregar Proveedor
+            </h2>
+            <button class="btn-close" onclick="closeProveedorModal()">✖</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="proveedorForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Nombre del Proveedor <span class="required">*</span>
+                        </label>
+                        <input type="text" class="form-input" id="proveedorNombre" placeholder="Ej: Alimentos del Campo S.A." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Productos
+                        </label>
+                        <input type="text" class="form-input" id="proveedorProductos" placeholder="Ej: Concentrados, Forraje">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Contacto</label>
+                        <input type="text" class="form-input" id="proveedorContacto" placeholder="Nombre del contacto">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Teléfono <span class="required">*</span>
+                        </label>
+                        <input type="tel" class="form-input" id="proveedorTelefono" placeholder="Ej: +591 12345678" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" id="proveedorEmail" placeholder="correo@ejemplo.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" class="form-input" id="proveedorDireccion" placeholder="Dirección completa">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">Observaciones</label>
+                        <textarea class="form-input" id="proveedorObservaciones" rows="3" placeholder="Notas adicionales, condiciones de pago..."></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeProveedorModal()">Cancelar</button>
+            <button class="btn-save" onclick="saveProveedor()">💾 Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Ver Detalles -->
+<div class="modal-overlay" id="modalDetails">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                <span>📋</span> Detalles
+            </h2>
+            <button class="btn-close" onclick="closeDetailsModal()">✖</button>
+        </div>
+
+        <div class="modal-body" id="detailsContent">
+            <!-- Los detalles se cargan con JavaScript -->
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeDetailsModal()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================
+// DATOS DE EJEMPLO
+// ============================================
+
+let inventarioData = [
+    { id: 'A001', nombre: 'Concentrado Lechero', categoria: 'Concentrado', stock: 150, stockMin: 500, unidad: 'kg', costo: 28.50, proveedor: 'Alimentos del Campo S.A.', ubicacion: 'Bodega A', stockEstado: 'Bajo', observaciones: '' },
+    { id: 'A002', nombre: 'Heno de Alfalfa', categoria: 'Forraje', stock: 2500, stockMin: 500, unidad: 'kg', costo: 12.00, proveedor: 'Forrajes El Prado', ubicacion: 'Bodega B', stockEstado: 'Alto', observaciones: '' },
+    { id: 'A003', nombre: 'Sales Mineralizadas', categoria: 'Sales', stock: 200, stockMin: 300, unidad: 'kg', costo: 45.00, proveedor: 'Nutrivit', ubicacion: 'Bodega A', stockEstado: 'Bajo', observaciones: '' },
+    { id: 'A004', nombre: 'Ensilaje de Maíz', categoria: 'Forraje', stock: 3800, stockMin: 1000, unidad: 'kg', costo: 8.50, proveedor: 'Forrajes El Prado', ubicacion: 'Silo 1', stockEstado: 'Alto', observaciones: '' },
+    { id: 'A005', nombre: 'Suplemento Vitamínico', categoria: 'Suplemento', stock: 80, stockMin: 100, unidad: 'kg', costo: 65.00, proveedor: 'Nutrivit', ubicacion: 'Bodega A', stockEstado: 'Bajo', observaciones: 'Vence en 15 días' },
+];
+
+let dietasData = [
+    { id: 'D001', categoria: 'Vaca Lechera', alimento: 'Concentrado Lechero + Heno', cantidad: 12, frecuencia: 2, suplementos: 'Sales mineralizadas', costoDia: 22.50, estado: 'Activa', observaciones: 'Suministrar en ordeño' },
+    { id: 'D002', categoria: 'Vaca Seca', alimento: 'Heno de Alfalfa', cantidad: 8, frecuencia: 1, suplementos: 'Sales mineralizadas', costoDia: 10.00, estado: 'Activa', observaciones: '' },
+    { id: 'D003', categoria: 'Ternero', alimento: 'Concentrado Inicio + Leche', cantidad: 3, frecuencia: 3, suplementos: 'Vitaminas', costoDia: 8.50, estado: 'Activa', observaciones: 'Aumentar gradualmente' },
+    { id: 'D004', categoria: 'Novillo', alimento: 'Ensilaje + Concentrado', cantidad: 10, frecuencia: 2, suplementos: 'Sales', costoDia: 15.00, estado: 'Activa', observaciones: '' },
+];
+
+let suministrosData = [
+    { id: 'S001', fecha: '2025-10-17', alimento: 'Concentrado Lechero', cantidad: 150, potrero: 'Potrero A - Vacas Lecheras', responsable: 'Juan Pérez', hora: '06:00', estado: 'Suministrado', observaciones: '' },
+    { id: 'S002', fecha: '2025-10-17', alimento: 'Heno de Alfalfa', cantidad: 200, potrero: 'Potrero B - Vacas Secas', responsable: 'María González', hora: '08:00', estado: 'Suministrado', observaciones: '' },
+    { id: 'S003', fecha: '2025-10-17', alimento: 'Sales Mineralizadas', cantidad: 15, potrero: 'Potrero A', responsable: 'Juan Pérez', hora: '14:00', estado: 'Suministrado', observaciones: '' },
+    { id: 'S004', fecha: '2025-10-17', alimento: 'Concentrado Lechero', cantidad: 150, potrero: 'Potrero A', responsable: 'Juan Pérez', hora: '18:00', estado: 'Pendiente', observaciones: 'Ordeño vespertino' },
+];
+
+let proveedoresData = [
+    { id: 'P001', nombre: 'Alimentos del Campo S.A.', productos: 'Concentrados, Balanceados', contacto: 'Luis Ramírez', telefono: '+591 3-1234567', email: 'ventas@alimentoscampo.com', direccion: 'Av. Principal 123', ultimaCompra: '2025-10-10', observaciones: 'Descuento 5% en compras mayores a 1 ton' },
+    { id: 'P002', nombre: 'Forrajes El Prado', productos: 'Heno, Ensilaje, Forraje verde', contacto: 'Ana Martínez', telefono: '+591 3-7654321', email: 'contacto@forrajesprado.com', direccion: 'Ruta 7 km 15', ultimaCompra: '2025-10-05', observaciones: '' },
+    { id: 'P003', nombre: 'Nutrivit', productos: 'Sales, Vitaminas, Suplementos', contacto: 'Carlos López', telefono: '+591 3-9876543', email: 'info@nutrivit.com', direccion: 'Zona Industrial', ultimaCompra: '2025-09-28', observaciones: 'Entrega a domicilio sin costo' },
+];
+
+let currentItemId = null;
+
+// ============================================
+// TABS
+// ============================================
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        const tabName = this.dataset.tab;
+        
+        // Ocultar todos
+        document.getElementById('inventarioContent').style.display = 'none';
+        document.getElementById('dietasContent').style.display = 'none';
+        document.getElementById('suministrosContent').style.display = 'none';
+        document.getElementById('proveedoresContent').style.display = 'none';
+        document.getElementById('costosContent').style.display = 'none';
+        
+        // Mostrar el activo
+        if (tabName === 'inventario') {
+            document.getElementById('inventarioContent').style.display = 'block';
+            renderInventario();
+        } else if (tabName === 'dietas') {
+            document.getElementById('dietasContent').style.display = 'block';
+            renderDietas();
+        } else if (tabName === 'suministros') {
+            document.getElementById('suministrosContent').style.display = 'block';
+            renderSuministros();
+        } else if (tabName === 'proveedores') {
+            document.getElementById('proveedoresContent').style.display = 'block';
+            renderProveedores();
+        } else if (tabName === 'costos') {
+            document.getElementById('costosContent').style.display = 'block';
+        }
+    });
+});
+
+// ============================================
+// RENDERIZAR INVENTARIO
+// ============================================
+function renderInventario() {
+    const grid = document.getElementById('inventarioGrid');
+    
+    if (inventarioData.length === 0) {
+        grid.innerHTML = '<p style="text-align:center; color:#6B7280; padding:40px; grid-column: 1/-1;">No hay alimentos registrados</p>';
+        return;
+    }
+    
+    grid.innerHTML = inventarioData.map(item => {
+        const porcentajeStock = (item.stock / item.stockMin) * 100;
+        let stockEstado = 'alto';
+        let stockTexto = 'Stock Alto';
+        
+        if (porcentajeStock < 30) {
+            stockEstado = 'bajo';
+            stockTexto = 'Stock Bajo';
+        } else if (porcentajeStock < 70) {
+            stockEstado = 'medio';
+            stockTexto = 'Stock Medio';
+        }
+        
+        return `
+            <div class="feed-card ${item.categoria.toLowerCase()}" onclick="viewDetails('inventario', '${item.id}')">
+                <div class="card-header">
+                    <div class="card-title">
+                        ${item.categoria === 'Concentrado' ? '🌾' : item.categoria === 'Forraje' ? '🌿' : item.categoria === 'Sales' ? '🧂' : '💊'} 
+                        ${item.nombre}
+                    </div>
+                    <div class="card-stock-badge ${stockEstado}">${stockTexto}</div>
+                </div>
+                <div class="card-body">
+                    <div style="margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span style="font-size: 14px; color: #6B7280;">Stock Actual</span>
+                            <span style="font-size: 16px; font-weight: 700;">${item.stock} ${item.unidad}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${stockEstado}" style="width: ${Math.min(porcentajeStock, 100)}%"></div>
+                        </div>
+                        <div style="font-size: 12px; color: #9CA3AF; margin-top: 4px;">Mínimo: ${item.stockMin} ${item.unidad}</div>
+                    </div>
+                    
+                    <div class="card-info">
+                        <div class="card-info-item">
+                            <strong>Costo:</strong> $${item.costo}/${item.unidad}
+                        </div>
+                        <div class="card-info-item">
+                            <strong>Categoría:</strong> ${item.categoria}
+                        </div>
+                        <div class="card-info-item" style="grid-column: 1/-1;">
+                            <strong>Proveedor:</strong> ${item.proveedor}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer" onclick="event.stopPropagation()">
+                    <button class="btn-action btn-edit" onclick="editInventario('${item.id}')" title="Editar">✏️</button>
+                    <button class="btn-action btn-delete" onclick="deleteInventario('${item.id}')" title="Eliminar">🗑️</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ============================================
+// RENDERIZAR DIETAS
+// ============================================
+function renderDietas() {
+    const tbody = document.getElementById('dietasTableBody');
+    
+    if (dietasData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#6B7280; padding:40px;">No hay planes de dieta registrados</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = dietasData.map(dieta => `
+        <tr>
+            <td><strong>${dieta.categoria}</strong></td>
+            <td>${dieta.alimento}</td>
+            <td>${dieta.cantidad} kg</td>
+            <td>${dieta.suplementos}</td>
+            <td>$${dieta.costoDia}</td>
+            <td><span class="badge ${dieta.estado.toLowerCase()}">${dieta.estado}</span></td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-action btn-view" onclick="viewDetails('dieta', '${dieta.id}')" title="Ver">👁️</button>
+                    <button class="btn-action btn-edit" onclick="editDieta('${dieta.id}')" title="Editar">✏️</button>
+                    <button class="btn-action btn-delete" onclick="deleteDieta('${dieta.id}')" title="Eliminar">🗑️</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// ============================================
+// RENDERIZAR SUMINISTROS
+// ============================================
+function renderSuministros() {
+    const tbody = document.getElementById('suministrosTableBody');
+    
+    if (suministrosData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#6B7280; padding:40px;">No hay suministros registrados</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = suministrosData.map(sum => `
+        <tr>
+            <td>${new Date(sum.fecha).toLocaleDateString('es-ES')}</td>
+            <td><strong>${sum.alimento}</strong></td>
+            <td>${sum.cantidad} kg</td>
+            <td>${sum.potrero}</td>
+            <td>${sum.responsable || 'N/A'}</td>
+            <td><span class="badge ${sum.estado.toLowerCase()}">${sum.estado}</span></td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-action btn-view" onclick="viewDetails('suministro', '${sum.id}')" title="Ver">👁️</button>
+                    <button class="btn-action btn-edit" onclick="editSuministro('${sum.id}')" title="Editar">✏️</button>
+                    <button class="btn-action btn-delete" onclick="deleteSuministro('${sum.id}')" title="Eliminar">🗑️</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// ============================================
+// RENDERIZAR PROVEEDORES
+// ============================================
+function renderProveedores() {
+    const tbody = document.getElementById('proveedoresTableBody');
+    
+    if (proveedoresData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#6B7280; padding:40px;">No hay proveedores registrados</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = proveedoresData.map(prov => `
+        <tr>
+            <td><strong>${prov.nombre}</strong></td>
+            <td>${prov.productos}</td>
+            <td>${prov.contacto}</td>
+            <td>${prov.telefono}</td>
+            <td>${new Date(prov.ultimaCompra).toLocaleDateString('es-ES')}</td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-action btn-view" onclick="viewDetails('proveedor', '${prov.id}')" title="Ver">👁️</button>
+                    <button class="btn-action btn-edit" onclick="editProveedor('${prov.id}')" title="Editar">✏️</button>
+                    <button class="btn-action btn-delete" onclick="deleteProveedor('${prov.id}')" title="Eliminar">🗑️</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// ============================================
+// MODALES
+// ============================================
+function openInventarioModal() {
+    document.getElementById('modalInventario').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeInventarioModal() {
+    document.getElementById('modalInventario').classList.remove('active');
+    document.body.style.overflow = 'auto';
+    document.getElementById('inventarioForm').reset();
+    currentItemId = null;
+}
+
+function openDietaModal() {
+    document.getElementById('modalDieta').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDietaModal() {
+    document.getElementById('modalDieta').classList.remove('active');
+    document.body.style.overflow = 'auto';
+    document.getElementById('dietaForm').reset();
+    currentItemId = null;
+}
+
+function openSuministroModal() {
+    document.getElementById('modalSuministro').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSuministroModal() {
+    document.getElementById('modalSuministro').classList.remove('active');
+    document.body.style.overflow = 'auto';
+    document.getElementById('suministroForm').reset();
+    currentItemId = null;
+}
+
+function openProveedorModal() {
+    document.getElementById('modalProveedor').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeProveedorModal() {
+    document.getElementById('modalProveedor').classList.remove('active');
+    document.body.style.overflow = 'auto';
+    document.getElementById('proveedorForm').reset();
+    currentItemId = null;
+}
+
+function closeDetailsModal() {
+    document.getElementById('modalDetails').classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+// ============================================
+// GUARDAR
+// ============================================
+function saveInventario() {
+    const nombre = document.getElementById('inventarioNombre').value;
+    const categoria = document.getElementById('inventarioCategoria').value;
+    const stock = document.getElementById('inventarioStock').value;
+    const stockMin = document.getElementById('inventarioStockMin').value;
+    const unidad = document.getElementById('inventarioUnidad').value;
+    const costo = document.getElementById('inventarioCosto').value;
+    const proveedor = document.getElementById('inventarioProveedor').value;
+    const ubicacion = document.getElementById('inventarioUbicacion').value;
+    const observaciones = document.getElementById('inventarioObservaciones').value;
+
+    if (!nombre || !categoria || !stock || !stockMin) {
+        alert('⚠️ Por favor completa los campos requeridos');
+        return;
+    }
+
+    const porcentaje = (parseFloat(stock) / parseFloat(stockMin)) * 100;
+    let stockEstado = 'Alto';
+    if (porcentaje < 30) stockEstado = 'Bajo';
+    else if (porcentaje < 70) stockEstado = 'Medio';
+
+    const inventarioItem = {
+        nombre,
+        categoria,
+        stock: parseFloat(stock),
+        stockMin: parseFloat(stockMin),
+        unidad,
+        costo: costo ? parseFloat(costo) : 0,
+        proveedor: proveedor || 'N/A',
+        ubicacion: ubicacion || 'N/A',
+        stockEstado,
+        observaciones
+    };
+
+    if (currentItemId) {
+        const index = inventarioData.findIndex(i => i.id === currentItemId);
+        inventarioData[index] = { ...inventarioData[index], ...inventarioItem };
+        alert('✅ Alimento actualizado correctamente');
+    } else {
+        const newId = 'A' + String(inventarioData.length + 1).padStart(3, '0');
+        inventarioData.push({ id: newId, ...inventarioItem });
+        alert('✅ Alimento agregado correctamente');
+    }
+
+    closeInventarioModal();
+    renderInventario();
+}
+
+function saveDieta() {
+    const categoria = document.getElementById('dietaCategoria').value;
+    const alimento = document.getElementById('dietaAlimento').value;
+    const cantidad = document.getElementById('dietaCantidad').value;
+    const frecuencia = document.getElementById('dietaFrecuencia').value;
+    const suplementos = document.getElementById('dietaSuplementos').value;
+    const costoDia = document.getElementById('dietaCosto').value;
+    const estado = document.getElementById('dietaEstado').value;
+    const observaciones = document.getElementById('dietaObservaciones').value;
+
+    if (!categoria || !alimento || !cantidad) {
+        alert('⚠️ Por favor completa los campos requeridos');
+        return;
+    }
+
+    const dietaItem = {
+        categoria,
+        alimento,
+        cantidad: parseFloat(cantidad),
+        frecuencia: parseInt(frecuencia),
+        suplementos: suplementos || 'N/A',
+        costoDia: costoDia ? parseFloat(costoDia) : 0,
+        estado,
+        observaciones
+    };
+
+    if (currentItemId) {
+        const index = dietasData.findIndex(d => d.id === currentItemId);
+        dietasData[index] = { ...dietasData[index], ...dietaItem };
+        alert('✅ Plan de dieta actualizado correctamente');
+    } else {
+        const newId = 'D' + String(dietasData.length + 1).padStart(3, '0');
+        dietasData.push({ id: newId, ...dietaItem });
+        alert('✅ Plan de dieta creado correctamente');
+    }
+
+    closeDietaModal();
+    renderDietas();
+}
+
+function saveSuministro() {
+    const fecha = document.getElementById('suministroFecha').value;
+    const alimento = document.getElementById('suministroAlimento').value;
+    const cantidad = document.getElementById('suministroCantidad').value;
+    const potrero = document.getElementById('suministroPotrero').value;
+    const responsable = document.getElementById('suministroResponsable').value;
+    const hora = document.getElementById('suministroHora').value;
+    const estado = document.getElementById('suministroEstado').value;
+    const observaciones = document.getElementById('suministroObservaciones').value;
+
+    if (!fecha || !alimento || !cantidad || !potrero) {
+        alert('⚠️ Por favor completa los campos requeridos');
+        return;
+    }
+
+    const suministroItem = {
+        fecha,
+        alimento,
+        cantidad: parseFloat(cantidad),
+        potrero,
+        responsable: responsable || 'N/A',
+        hora: hora || 'N/A',
+        estado,
+        observaciones
+    };
+
+    if (currentItemId) {
+        const index = suministrosData.findIndex(s => s.id === currentItemId);
+        suministrosData[index] = { ...suministrosData[index], ...suministroItem };
+        alert('✅ Suministro actualizado correctamente');
+    } else {
+        const newId = 'S' + String(suministrosData.length + 1).padStart(3, '0');
+        suministrosData.push({ id: newId, ...suministroItem });
+        alert('✅ Suministro registrado correctamente');
+    }
+
+    closeSuministroModal();
+    renderSuministros();
+}
+
+function saveProveedor() {
+    const nombre = document.getElementById('proveedorNombre').value;
+    const productos = document.getElementById('proveedorProductos').value;
+    const contacto = document.getElementById('proveedorContacto').value;
+    const telefono = document.getElementById('proveedorTelefono').value;
+    const email = document.getElementById('proveedorEmail').value;
+    const direccion = document.getElementById('proveedorDireccion').value;
+    const observaciones = document.getElementById('proveedorObservaciones').value;
+
+    if (!nombre || !telefono) {
+        alert('⚠️ Por favor completa los campos requeridos');
+        return;
+    }
+
+    const proveedorItem = {
+        nombre,
+        productos: productos || 'N/A',
+        contacto: contacto || 'N/A',
+        telefono,
+        email: email || 'N/A',
+        direccion: direccion || 'N/A',
+        ultimaCompra: new Date().toISOString().split('T')[0],
+        observaciones
+    };
+
+    if (currentItemId) {
+        const index = proveedoresData.findIndex(p => p.id === currentItemId);
+        proveedoresData[index] = { ...proveedoresData[index], ...proveedorItem };
+        alert('✅ Proveedor actualizado correctamente');
+    } else {
+        const newId = 'P' + String(proveedoresData.length + 1).padStart(3, '0');
+        proveedoresData.push({ id: newId, ...proveedorItem });
+        alert('✅ Proveedor agregado correctamente');
+    }
+
+    closeProveedorModal();
+    renderProveedores();
+}
+
+// ============================================
+// EDITAR Y ELIMINAR
+// ============================================
+function editInventario(id) {
+    const item = inventarioData.find(i => i.id === id);
+    if (!item) return;
+
+    document.getElementById('modalInventarioTitle').innerHTML = '<span>✏️</span> Editar Alimento';
+    document.getElementById('inventarioNombre').value = item.nombre;
+    document.getElementById('inventarioCategoria').value = item.categoria;
+    document.getElementById('inventarioStock').value = item.stock;
+    document.getElementById('inventarioStockMin').value = item.stockMin;
+    document.getElementById('inventarioUnidad').value = item.unidad;
+    document.getElementById('inventarioCosto').value = item.costo;
+    document.getElementById('inventarioProveedor').value = item.proveedor;
+    document.getElementById('inventarioUbicacion').value = item.ubicacion;
+    document.getElementById('inventarioObservaciones').value = item.observaciones || '';
+
+    currentItemId = id;
+    openInventarioModal();
+}
+
+function deleteInventario(id) {
+    const item = inventarioData.find(i => i.id === id);
+    if (!item) return;
+
+    if (confirm(`¿Estás seguro de eliminar "${item.nombre}" del inventario?`)) {
+        inventarioData = inventarioData.filter(i => i.id !== id);
+        renderInventario();
+        alert('✅ Alimento eliminado correctamente');
+    }
+}
+
+function editDieta(id) {
+    const dieta = dietasData.find(d => d.id === id);
+    if (!dieta) return;
+
+    document.getElementById('modalDietaTitle').innerHTML = '<span>✏️</span> Editar Plan de Dieta';
+    document.getElementById('dietaCategoria').value = dieta.categoria;
+    document.getElementById('dietaAlimento').value = dieta.alimento;
+    document.getElementById('dietaCantidad').value = dieta.cantidad;
+    document.getElementById('dietaFrecuencia').value = dieta.frecuencia;
+    document.getElementById('dietaSuplementos').value = dieta.suplementos;
+    document.getElementById('dietaCosto').value = dieta.costoDia;
+    document.getElementById('dietaEstado').value = dieta.estado;
+    document.getElementById('dietaObservaciones').value = dieta.observaciones || '';
+
+    currentItemId = id;
+    openDietaModal();
+}
+
+function deleteDieta(id) {
+    if (confirm('¿Estás seguro de eliminar este plan de dieta?')) {
+        dietasData = dietasData.filter(d => d.id !== id);
+        renderDietas();
+        alert('✅ Plan eliminado correctamente');
+    }
+}
+
+function editSuministro(id) {
+    const sum = suministrosData.find(s => s.id === id);
+    if (!sum) return;
+
+    document.getElementById('modalSuministroTitle').innerHTML = '<span>✏️</span> Editar Suministro';
+    document.getElementById('suministroFecha').value = sum.fecha;
+    document.getElementById('suministroAlimento').value = sum.alimento;
+    document.getElementById('suministroCantidad').value = sum.cantidad;
+    document.getElementById('suministroPotrero').value = sum.potrero;
+    document.getElementById('suministroResponsable').value = sum.responsable;
+    document.getElementById('suministroHora').value = sum.hora !== 'N/A' ? sum.hora : '';
+    document.getElementById('suministroEstado').value = sum.estado;
+    document.getElementById('suministroObservaciones').value = sum.observaciones || '';
+
+    currentItemId = id;
+    openSuministroModal();
+}
+
+function deleteSuministro(id) {
+    if (confirm('¿Estás seguro de eliminar este registro de suministro?')) {
+        suministrosData = suministrosData.filter(s => s.id !== id);
+        renderSuministros();
+        alert('✅ Suministro eliminado correctamente');
+    }
+}
+
+function editProveedor(id) {
+    const prov = proveedoresData.find(p => p.id === id);
+    if (!prov) return;
+
+    document.getElementById('modalProveedorTitle').innerHTML = '<span>✏️</span> Editar Proveedor';
+    document.getElementById('proveedorNombre').value = prov.nombre;
+    document.getElementById('proveedorProductos').value = prov.productos;
+    document.getElementById('proveedorContacto').value = prov.contacto;
+    document.getElementById('proveedorTelefono').value = prov.telefono;
+    document.getElementById('proveedorEmail').value = prov.email !== 'N/A' ? prov.email : '';
+    document.getElementById('proveedorDireccion').value = prov.direccion;
+    document.getElementById('proveedorObservaciones').value = prov.observaciones || '';
+
+    currentItemId = id;
+    openProveedorModal();
+}
+
+function deleteProveedor(id) {
+    const prov = proveedoresData.find(p => p.id === id);
+    if (!prov) return;
+
+    if (confirm(`¿Estás seguro de eliminar al proveedor "${prov.nombre}"?`)) {
+        proveedoresData = proveedoresData.filter(p => p.id !== id);
+        renderProveedores();
+        alert('✅ Proveedor eliminado correctamente');
+    }
+}
+
+// ============================================
+// VER DETALLES
+// ============================================
+function viewDetails(type, id) {
+    let detailsHTML = '';
+
+    if (type === 'inventario') {
+        const item = inventarioData.find(i => i.id === id);
+        detailsHTML = `
+            <div class="detail-section">
+                <h3 class="detail-section-title">Información del Alimento</h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Nombre</div>
+                        <div class="detail-value">${item.nombre}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Categoría</div>
+                        <div class="detail-value">${item.categoria}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Stock Actual</div>
+                        <div class="detail-value">${item.stock} ${item.unidad}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Stock Mínimo</div>
+                        <div class="detail-value">${item.stockMin} ${item.unidad}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Costo por Unidad</div>
+                        <div class="detail-value">$${item.costo}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Valor Total Stock</div>
+                        <div class="detail-value">$${(item.stock * item.costo).toFixed(2)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Proveedor</div>
+                        <div class="detail-value">${item.proveedor}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Ubicación</div>
+                        <div class="detail-value">${item.ubicacion}</div>
+                    </div>
+                </div>
+                ${item.observaciones ? `<p style="margin-top:16px; color:#6B7280;">${item.observaciones}</p>` : ''}
+            </div>
+        `;
+    } else if (type === 'dieta') {
+        const dieta = dietasData.find(d => d.id === id);
+        detailsHTML = `
+            <div class="detail-section">
+                <h3 class="detail-section-title">Plan de Alimentación</h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Categoría Animal</div>
+                        <div class="detail-value">${dieta.categoria}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Alimento Principal</div>
+                        <div class="detail-value">${dieta.alimento}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Cantidad por Animal/Día</div>
+                        <div class="detail-value">${dieta.cantidad} kg</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Frecuencia</div>
+                        <div class="detail-value">${dieta.frecuencia} veces al día</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Suplementos</div>
+                        <div class="detail-value">${dieta.suplementos}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Costo por Animal/Día</div>
+                        <div class="detail-value">$${dieta.costoDia}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Estado</div>
+                        <div class="detail-value"><span class="badge ${dieta.estado.toLowerCase()}">${dieta.estado}</span></div>
+                    </div>
+                </div>
+                ${dieta.observaciones ? `<p style="margin-top:16px; color:#6B7280;">${dieta.observaciones}</p>` : ''}
+            </div>
+        `;
+    } else if (type === 'suministro') {
+        const sum = suministrosData.find(s => s.id === id);
+        detailsHTML = `
+            <div class="detail-section">
+                <h3 class="detail-section-title">Información del Suministro</h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Fecha</div>
+                        <div class="detail-value">${new Date(sum.fecha).toLocaleDateString('es-ES')}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Hora</div>
+                        <div class="detail-value">${sum.hora}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Alimento</div>
+                        <div class="detail-value">${sum.alimento}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Cantidad</div>
+                        <div class="detail-value">${sum.cantidad} kg</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Potrero/Grupo</div>
+                        <div class="detail-value">${sum.potrero}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Responsable</div>
+                        <div class="detail-value">${sum.responsable}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Estado</div>
+                        <div class="detail-value"><span class="badge ${sum.estado.toLowerCase()}">${sum.estado}</span></div>
+                    </div>
+                </div>
+                ${sum.observaciones ? `<p style="margin-top:16px; color:#6B7280;">${sum.observaciones}</p>` : ''}
+            </div>
+        `;
+    } else if (type === 'proveedor') {
+        const prov = proveedoresData.find(p => p.id === id);
+        detailsHTML = `
+            <div class="detail-section">
+                <h3 class="detail-section-title">Información del Proveedor</h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Nombre</div>
+                        <div class="detail-value">${prov.nombre}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Productos</div>
+                        <div class="detail-value">${prov.productos}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Contacto</div>
+                        <div class="detail-value">${prov.contacto}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Teléfono</div>
+                        <div class="detail-value">${prov.telefono}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Email</div>
+                        <div class="detail-value">${prov.email}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Dirección</div>
+                        <div class="detail-value">${prov.direccion}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Última Compra</div>
+                        <div class="detail-value">${new Date(prov.ultimaCompra).toLocaleDateString('es-ES')}</div>
+                    </div>
+                </div>
+                ${prov.observaciones ? `<p style="margin-top:16px; color:#6B7280;">${prov.observaciones}</p>` : ''}
+            </div>
+        `;
+    }
+
+    document.getElementById('detailsContent').innerHTML = detailsHTML;
+    document.getElementById('modalDetails').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+// ============================================
+// INICIALIZAR SELECT DE SUMINISTROS
+// ============================================
+function initializeSuministroSelect() {
+    const select = document.getElementById('suministroAlimento');
+    if (!select) return;
+    
+    select.innerHTML = '<option value="">Seleccionar alimento</option>';
+    inventarioData.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.nombre;
+        option.textContent = `${item.nombre} (Stock: ${item.stock} ${item.unidad})`;
+        select.appendChild(option);
+    });
+}
+
+// ============================================
+// EVENT LISTENERS
+// ============================================
+document.getElementById('btnAddInventario').addEventListener('click', () => {
+    document.getElementById('modalInventarioTitle').innerHTML = '<span>📦</span> Agregar Alimento';
+    document.getElementById('inventarioForm').reset();
+    currentItemId = null;
+    openInventarioModal();
+});
+
+document.getElementById('btnAddDieta').addEventListener('click', () => {
+    document.getElementById('modalDietaTitle').innerHTML = '<span>📋</span> Crear Plan de Dieta';
+    document.getElementById('dietaForm').reset();
+    currentItemId = null;
+    openDietaModal();
+});
+
+document.getElementById('btnAddSuministro').addEventListener('click', () => {
+    document.getElementById('modalSuministroTitle').innerHTML = '<span>🍽️</span> Registrar Suministro';
+    document.getElementById('suministroForm').reset();
+    // Setear fecha actual por defecto
+    document.getElementById('suministroFecha').value = new Date().toISOString().split('T')[0];
+    currentItemId = null;
+    initializeSuministroSelect();
+    openSuministroModal();
+});
+
+document.getElementById('btnAddProveedor').addEventListener('click', () => {
+    document.getElementById('modalProveedorTitle').innerHTML = '<span>🚚</span> Agregar Proveedor';
+    document.getElementById('proveedorForm').reset();
+    currentItemId = null;
+    openProveedorModal();
+});
+
+// Cerrar modales al hacer click fuera
+document.querySelectorAll('.modal-overlay').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    });
+});
+
+// ============================================
+// INICIALIZAR
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+    renderInventario();
+});
+</script>

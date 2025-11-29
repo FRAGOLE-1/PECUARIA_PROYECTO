@@ -1,0 +1,51 @@
+/* ============================================
+   SISTEMA DE COLORES UNIFICADO - CATTLESIS
+   Azul profesional corporativo
+============================================ */
+
+:root {
+    /* Color principal del sistema (Azul corporativo) */
+    --color-primary: #1E40AF;
+    --color-primary-dark: #1E3A8A;
+    --color-primary-light: #3B82F6;
+    --color-primary-very-light: #DBEAFE;
+    --color-primary-ultra-light: #EFF6FF;
+    
+    /* Gradientes principales */
+    --gradient-primary: linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%);
+    --gradient-light: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+    
+    /* Sombras con el color primario */
+    --shadow-primary: 0 4px 20px rgba(30, 64, 175, 0.3);
+    --shadow-primary-hover: 0 6px 24px rgba(30, 64, 175, 0.4);
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.05);
+    
+    /* Colores de estado (universales) */
+    --color-success: #10B981;
+    --color-success-light: rgba(16, 185, 129, 0.1);
+    
+    --color-warning: #F59E0B;
+    --color-warning-light: rgba(245, 158, 11, 0.1);
+    
+    --color-danger: #EF4444;
+    --color-danger-light: rgba(239, 68, 68, 0.1);
+    
+    --color-info: #3B82F6;
+    --color-info-light: rgba(59, 130, 246, 0.1);
+    
+    /* Colores de texto */
+    --color-text-primary: #1F2937;
+    --color-text-secondary: #6B7280;
+    --color-text-light: #9CA3AF;
+    --color-text-white: #FFFFFF;
+    
+    /* Colores de fondo */
+    --color-bg-primary: #FFFFFF;
+    --color-bg-secondary: #F9FAFB;
+    --color-bg-tertiary: #F3F4F6;
+    
+    /* Bordes */
+    --color-border-light: #E5E7EB;
+    --color-border-medium: #D1D5DB;
+    --color-border-dark: #9CA3AF;
+}

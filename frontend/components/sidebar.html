@@ -1,0 +1,104 @@
+<!-- ============================================
+     SIDEBAR PRINCIPAL - CattleSIS
+============================================ -->
+<aside class="sidebar">
+    <nav class="menu">
+        <!-- Botón: Dashboard -->
+        <button class="menu-item active" onclick="loadModule('dashboard')">
+
+            <span class="icon">🏠</span>
+            <span class="label">Dashboard</span>
+        </button>
+
+        <!-- Botón: Animales -->
+        <button class="menu-item" onclick="loadModule('animals')">
+            <span class="icon">🐄</span>
+            <span class="label">Animales</span>
+        </button>
+
+
+        <!-- Botón: Sanidad -->
+        <button class="menu-item" onclick="loadModule('health')">
+            <span class="icon">💉</span>
+            <span class="label">Sanidad</span>
+        </button>
+
+        <!-- Botón: Reproducción -->
+        <button class="menu-item" onclick="loadModule('reproduction')">
+            <span class="icon">💙</span>
+            <span class="label">Reproducción</span>
+        </button>
+
+
+        <!-- Botón: Producción -->
+        <button class="menu-item" onclick="loadModule('production')">
+            <span class="icon">🥛</span>
+            <span class="label">Producción</span>
+        </button>
+
+        <!-- Botón: Finanzas -->
+        <button class="menu-item" onclick="loadModule('finance')">
+
+            <span class="icon">💰</span>
+            <span class="label">Finanzas</span>
+        </button>
+
+        <!-- Botón: Configuración -->
+        <button class="menu-item" onclick="loadModule('settings')">
+            <span class="icon">⚙️</span>
+            <span class="label">Configuración</span>
+        </button>
+    </nav>
+</aside>
+
+<style>
+/* ===== Estilo del Sidebar ===== */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 70px;
+    height: 100vh;
+    background: #1f2937;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    gap: 20px;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    align-items: center;
+}
+
+.menu-item {
+    width: 48px;
+    height: 48px;
+    border: none;
+    background: none;
+    color: #9ca3af;
+    font-size: 22px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.menu-item:hover {
+    background: #374151;
+    color: #ffffff;
+}
+
+.menu-item.active {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.label {
+    display: none;
+}
+</style>

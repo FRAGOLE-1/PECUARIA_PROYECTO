@@ -1,0 +1,51 @@
+<!-- ============================================
+     TARJETAS RÁPIDAS (RESUMEN GENERAL)
+============================================ -->
+<section class="cards-section">
+    <div class="card">
+        <h3>🐄 Total Animales</h3>
+        <p>234</p>
+    </div>
+    <div class="card">
+        <h3>🥛 Producción Hoy</h3>
+        <p>2,874 L</p>
+    </div>
+    <div class="card">
+        <h3>💰 Ingresos del Mes</h3>
+        <p>$45,230</p>
+    </div>
+    <div class="card">
+        <h3>⚠️ Alertas Críticas</h3>
+        <p>7</p>
+    </div>
+</section>
+
+<style>
+.cards-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+}
+
+.card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+}
+
+.card h3 {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 8px;
+}
+
+.card p {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111827;
+}
+</style>
